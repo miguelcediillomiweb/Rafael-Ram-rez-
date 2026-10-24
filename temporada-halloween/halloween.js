@@ -11,20 +11,20 @@
     if(layer||!d.body)return;
     layer=d.createElement('div');layer.className='hwn-layer';layer.setAttribute('aria-hidden','true');d.body.appendChild(layer);measure();
     /* Esquina superior izquierda: araña fija. */
-    layer.appendChild(img('araña esquina.webp','hwn-corner hwn-spider-corner'));
+    d.body.appendChild(img('araña esquina.webp','hwn-corner hwn-spider-corner'));
     /* Esquina inferior derecha: calabaza bailando. */
-    layer.appendChild(img('calabaza bailando.webp','hwn-corner hwn-pumpkin-dance'));
+    d.body.appendChild(img('calabaza bailando.webp','hwn-corner hwn-pumpkin-dance'));
     /* Esquina inferior izquierda: calabaza animada. */
-    layer.appendChild(img('calabaza.webp','hwn-corner hwn-pumpkin'));
+    d.body.appendChild(img('calabaza.webp','hwn-corner hwn-pumpkin'));
 
     /* Araña colgante centrada: baja por todo el documento y vuelve a subir. */
-    var thread=d.createElement('div');thread.className='hwn-hang-thread';layer.appendChild(thread);
-    var hanging=img('araña colgante.webp','hwn-hanging-spider');layer.appendChild(hanging);
+    var thread=d.createElement('div');thread.className='hwn-hang-thread';d.body.appendChild(thread);
+    var hanging=img('araña colgante.webp','hwn-hanging-spider');d.body.appendChild(hanging);
     function hangFrame(t){
       requestAnimationFrame(hangFrame);
       var dt=Math.min(.05,(t-(last||t))/1000);last=t;
       if(t-lastMeasure>1200){measure();lastMeasure=t;}
-      var maxY=Math.max(0,docHeight-(hanging.offsetHeight||100)-8);
+      var maxY=Math.max(0,window.innerHeight-(hanging.offsetHeight||100)-8);
       hangY+=hangDir*175*dt;
       if(hangY>=maxY){hangY=maxY;hangDir=-1;}if(hangY<=0){hangY=0;hangDir=1;}
       thread.style.height=hangY+'px';hanging.style.transform='translate(-50%,'+hangY+'px)';
@@ -62,13 +62,16 @@
     }
     setTimeout(spiderPop,rnd(12000,20000));
 
-    /* Video animado centrado en el borde inferior. */
-    var video=d.createElement('video');video.className='hwn-bottom-video';video.src=A+'images (13).mp4';video.autoplay=true;video.loop=true;video.muted=true;video.playsInline=true;video.preload='metadata';video.setAttribute('aria-hidden','true');video.onerror=function(){video.remove();};layer.appendChild(video);
-    var p=video.play();if(p&&p.catch)p.catch(function(){});
     window.addEventListener('resize',measure,{passive:true});
     if(window.ResizeObserver&&d.body)new ResizeObserver(measure).observe(d.body);
     if(reduceMotion){video.pause();video.removeAttribute('autoplay');}
   }
-  if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',function(){setTimeout(start,1800);},{once:true});
-  else setTimeout(start,1800);
+  /* No mostrar decoraciones durante la pantalla inicial de la puerta. */
+  function esperarEntrada(){
+    if(!d.body){setTimeout(esperarEntrada,250);return;}
+    if(d.getElementById('puerta')){setTimeout(esperarEntrada,250);return;}
+    start();
+  }
+  if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',esperarEntrada,{once:true});
+  else esperarEntrada();
 })();
