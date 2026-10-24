@@ -1,0 +1,20 @@
+/* Efectos temporales de Halloween — Escuela Primaria Rafael Ramírez.
+   Para retirar la temporada, elimina las referencias en index.html y la carpeta temporada-halloween. */
+:root{--hwn-shadow:drop-shadow(0 3px 6px rgba(0,0,0,.38))}
+.hwn-layer{position:absolute;top:0;left:0;width:100%;height:0;z-index:10000;pointer-events:none}
+.hwn-layer img,.hwn-layer video{pointer-events:none;user-select:none;-webkit-user-drag:none;background:transparent}
+.hwn-corner{position:fixed;height:auto;object-fit:contain;filter:var(--hwn-shadow);z-index:10001}
+.hwn-spider-corner{top:0;left:0;width:clamp(88px,22vw,158px);transform-origin:0 0;animation:hwn-web-sway 5.8s ease-in-out infinite}
+.hwn-pumpkin-dance{right:8px;bottom:8px;width:clamp(86px,23vw,158px);animation:hwn-pumpkin-dance 2.1s ease-in-out infinite;transform-origin:50% 85%}
+.hwn-pumpkin{left:8px;bottom:8px;width:clamp(74px,19vw,132px);animation:hwn-pumpkin-glow 2.8s ease-in-out infinite}
+.hwn-hang-thread{position:absolute;left:50%;top:0;width:2px;transform:translateX(-50%);height:0;background:linear-gradient(180deg,rgba(20,20,20,.72),rgba(70,70,70,.42));border-radius:2px}
+.hwn-hanging-spider{position:absolute;top:0;left:50%;width:clamp(66px,15vw,112px);height:auto;transform:translate(-50%,0);filter:var(--hwn-shadow);transform-origin:50% 0}
+.hwn-walker,.hwn-ghost,.hwn-pop-spider{position:absolute;left:0;top:0;height:auto;object-fit:contain;filter:var(--hwn-shadow);will-change:transform,opacity}
+.hwn-walker{width:clamp(60px,15vw,108px)}
+.hwn-ghost{width:clamp(68px,17vw,120px)}
+.hwn-pop-spider{width:clamp(66px,16vw,116px)}
+.hwn-bottom-video{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:clamp(110px,28vw,205px);max-height:23vh;height:auto;object-fit:contain;z-index:10002;filter:var(--hwn-shadow)}
+@keyframes hwn-web-sway{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.8deg)}}
+@keyframes hwn-pumpkin-dance{0%,100%{transform:rotate(-5deg) translateY(0)}25%{transform:rotate(5deg) translateY(-5px)}50%{transform:rotate(-4deg) translateY(0)}75%{transform:rotate(4deg) translateY(-3px)}}
+@keyframes hwn-pumpkin-glow{0%,100%{transform:translateY(0) rotate(-2deg);filter:var(--hwn-shadow) brightness(1)}50%{transform:translateY(-7px) rotate(3deg);filter:var(--hwn-shadow) brightness(1.12)}}
+@media(prefers-reduced-motion:reduce){.hwn-spider-corner,.hwn-pumpkin-dance,.hwn-pumpkin{animation:none}}
