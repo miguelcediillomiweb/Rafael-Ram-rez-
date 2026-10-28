@@ -261,3 +261,179 @@ html.hwn-on footer{padding-bottom:118px}
 @keyframes hwn-brilla{0%,100%{transform:translateY(0) rotate(-2deg);filter:var(--hwn-sombra) brightness(1)}50%{transform:translateY(-5px) rotate(3deg);filter:var(--hwn-sombra) brightness(1.12)}}
 @keyframes hwn-hilo{from{transform:scaleY(.06)}to{transform:scaleY(1)}}
 @keyframes hwn-baja{from{transform:translateY(calc(var(--hwn-H) * .06)) rotate(-3deg)}to{transform:translateY(var(--hwn-H)) rotate(3deg)}}
+
+
+/* ===== Rediseño visual premium escolar (octubre 2026) ===== */
+:root{
+  --navy:#10285d;
+  --navy2:#2455a4;
+  --gold:#ffc928;
+  --flame:#e85b35;
+  --bg:#f2f6ff;
+  --card:#ffffff;
+  --ink:#172544;
+  --muted:#64718d;
+  --line:#dce6f7;
+  --sombra-suave:0 12px 32px rgba(16,40,93,.09);
+  --sombra-hover:0 18px 38px rgba(16,40,93,.16);
+}
+body{
+  background:
+    radial-gradient(ellipse at 8% 18%,rgba(81,147,255,.09),transparent 28rem),
+    radial-gradient(ellipse at 94% 48%,rgba(255,201,40,.10),transparent 26rem),
+    var(--bg);
+  background-attachment:fixed;
+}
+.banner{
+  padding:clamp(34px,6vw,62px) 18px clamp(42px,7vw,70px);
+  background:
+    radial-gradient(circle at 15% 10%,rgba(83,174,255,.26),transparent 28%),
+    radial-gradient(circle at 88% 80%,rgba(255,201,40,.18),transparent 25%),
+    linear-gradient(135deg,#0b1d49 0%,#153878 48%,#2861ad 100%);
+  border-bottom:7px solid var(--gold);
+  box-shadow:0 14px 34px rgba(12,36,85,.18);
+}
+.banner::after{
+  content:"";position:absolute;inset:auto -5% -55px;height:100px;
+  border-radius:50% 50% 0 0/45% 45% 0 0;
+  background:var(--bg);opacity:.98;z-index:0;
+}
+.banner img{
+  width:clamp(104px,18vw,142px);height:clamp(104px,18vw,142px);
+  object-fit:cover;border:4px solid #fff3c2;
+  box-shadow:0 0 0 7px rgba(255,201,40,.18),0 14px 35px rgba(0,0,0,.24);
+}
+.banner h1{
+  max-width:850px;margin:18px auto 0;
+  text-shadow:0 3px 18px rgba(0,0,0,.22);
+  letter-spacing:.15px;
+}
+.banner .cct{
+  display:inline-block;margin-top:13px;padding:6px 13px;
+  border:1px solid rgba(255,255,255,.25);border-radius:999px;
+  background:rgba(255,255,255,.10);backdrop-filter:blur(8px);
+}
+.flota span{filter:drop-shadow(0 4px 8px rgba(0,0,0,.22));opacity:.7}
+.saludo{
+  width:calc(100% - 28px);max-width:760px;margin:-26px auto 0;
+  padding:20px 22px;border:1px solid rgba(255,255,255,.9);
+  border-radius:22px;box-shadow:0 16px 38px rgba(16,40,93,.13);
+  backdrop-filter:blur(10px);
+}
+.saludo h2{font-size:clamp(1.35rem,4vw,1.8rem)}
+.saludo .hora{font-size:clamp(1.2rem,4vw,1.5rem)}
+main{max-width:920px;padding:24px 16px 48px;gap:22px}
+section{
+  position:relative;padding:clamp(18px,3vw,28px);
+  border:1px solid rgba(211,224,246,.95);border-radius:22px;
+  box-shadow:var(--sombra-suave);
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+}
+section::before{
+  content:"";position:absolute;top:0;left:22px;right:22px;height:4px;
+  border-radius:0 0 8px 8px;
+  background:linear-gradient(90deg,var(--navy2),#58a7ff,var(--gold));
+  opacity:.9;
+}
+section>h2{
+  font-size:clamp(1.2rem,3.5vw,1.5rem);
+  border-bottom:0;display:flex;align-items:center;gap:9px;
+  padding:5px 0 12px;margin:0 0 15px;
+}
+section>h2::after{
+  content:"";height:3px;flex:1;min-width:18px;max-width:100px;
+  border-radius:10px;background:linear-gradient(90deg,var(--gold),rgba(255,201,40,0));
+}
+.item,.gis,.dcard,.carpeta,.notif,.pizarron{
+  border-radius:16px;
+}
+.item{
+  padding:15px 16px;background:linear-gradient(135deg,#fff,#f6f9ff);
+  border:1px solid #e3ebfa;border-left:5px solid var(--navy2);
+  box-shadow:0 5px 14px rgba(16,40,93,.045);
+}
+.item:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(16,40,93,.09)}
+.item.imp{border-left-color:var(--flame);background:linear-gradient(135deg,#fff8f4,#fff)}
+.notif{padding:16px;background:linear-gradient(135deg,#fff9df,#fff);box-shadow:inset 0 0 0 1px rgba(255,201,40,.12)}
+.btn,#btnPuerta{
+  border-radius:14px;font-weight:800;letter-spacing:.1px;
+  transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;
+}
+.btn{
+  box-shadow:0 5px 0 rgba(10,35,89,.16),0 8px 18px rgba(16,40,93,.10);
+}
+.btn:hover,#btnPuerta:hover{filter:brightness(1.035);transform:translateY(-2px)}
+.btn:active,#btnPuerta:active{filter:brightness(.98)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
+  outline:3px solid #58a7ff;outline-offset:3px;
+}
+input,select,textarea{
+  border:1.5px solid #cbd8ef!important;border-radius:12px!important;
+  background:#fbfdff!important;min-height:48px;
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:#3978d8!important;box-shadow:0 0 0 4px rgba(57,120,216,.12)!important;outline:none;
+}
+#formAcceso,#formWa{
+  padding:clamp(14px,3vw,22px);border-radius:18px;
+  background:linear-gradient(145deg,#f8fbff,#fff);
+  border:1px solid #e2eafa;
+}
+#formAcceso .btn{width:100%;margin-top:8px;min-height:50px}
+.dest{gap:16px}
+.dcard{
+  overflow:hidden;border:1px solid #e0e9f8;background:#fff;
+  box-shadow:0 8px 22px rgba(16,40,93,.08);
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.dcard:hover{transform:translateY(-4px);box-shadow:var(--sombra-hover)}
+.dcard .txt{padding:17px}
+.carpeta{
+  border:1px solid #dbe6f8;background:linear-gradient(145deg,#fff,#f4f8ff);
+  box-shadow:0 7px 18px rgba(16,40,93,.07);
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+}
+.carpeta:hover{transform:translateY(-4px);border-color:#9bbcf0;box-shadow:0 13px 26px rgba(16,40,93,.13)}
+.cumple{
+  border-radius:18px;background:
+    radial-gradient(circle at 10% 0%,rgba(255,255,255,.24),transparent 35%),
+    linear-gradient(135deg,#17428c,#2868b5);
+  box-shadow:0 12px 28px rgba(16,40,93,.18);
+}
+.chip{box-shadow:0 4px 12px rgba(0,0,0,.08)}
+footer{
+  background:
+    radial-gradient(circle at 10% 0%,rgba(69,130,229,.25),transparent 35%),
+    linear-gradient(135deg,#0b1d49,#163c80);
+  border-top:6px solid var(--gold);
+}
+#puerta .placa{
+  border-color:#ffdc61;
+  box-shadow:0 12px 32px rgba(0,0,0,.45),0 0 0 5px rgba(255,201,40,.12),0 0 38px rgba(255,201,40,.22);
+}
+#btnPuerta{
+  box-shadow:0 7px 0 #b78600,0 14px 32px rgba(0,0,0,.36),0 0 24px rgba(255,201,40,.25);
+}
+#luces{opacity:.55}
+@media (min-width:760px){
+  main{gap:24px}
+  section{padding:26px 30px}
+  .saludo{padding:22px 28px}
+}
+@media (max-width:520px){
+  body{font-size:16px}
+  .banner{padding-top:30px;padding-bottom:54px}
+  .banner h1{font-size:clamp(1.45rem,7vw,2rem)}
+  .flota span{font-size:1.35rem}
+  .saludo{padding:16px 14px;border-radius:18px}
+  main{padding:18px 12px 34px;gap:16px}
+  section{padding:19px 15px;border-radius:18px}
+  section::before{left:16px;right:16px}
+  .item{padding:13px}
+  #visorMarco{min-height:55vh}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
