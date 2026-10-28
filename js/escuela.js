@@ -1,26 +1,11 @@
-/**
- * Escuela Primaria Rafael Ramírez (CCT 15DPR082X)
- * Script oficial de integración: Google Apps Script, Google Drive y OneSignal
- * Ruta del archivo: js/escuela.js
- */
-
 const API = 'https://script.google.com/macros/s/AKfycbyizN5oq0LMc4uCabXVayS_6JsNM1HuWgWIZzwh_mlpHCu0oidYimuj1K4-eHc4Fcmz/exec';
 const $ = s => document.querySelector(s);
-
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-const DIAS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-
+const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 const CICLO = [
-  {n:'Octubre 2026',k:'octubre',e:'🍂'},
-  {n:'Noviembre 2026',k:'noviembre',e:'🍁'},
-  {n:'Diciembre 2026',k:'diciembre',e:'🎄'},
-  {n:'Enero 2027',k:'enero',e:'⛄'},
-  {n:'Febrero 2027',k:'febrero',e:'💌'},
-  {n:'Marzo 2027',k:'marzo',e:'🌸'},
-  {n:'Abril 2027',k:'abril',e:'🌱'},
-  {n:'Mayo 2027',k:'mayo',e:'🌷'},
-  {n:'Junio 2027',k:'junio',e:'☀️'},
-  {n:'Julio 2027',k:'julio',e:'🏖️'}
+  {n:'Octubre 2026',k:'octubre',e:'🎃'}, {n:'Noviembre 2026',k:'noviembre',e:'🍂'}, {n:'Diciembre 2026',k:'diciembre',e:'🎄'},
+  {n:'Enero 2027',k:'enero',e:'⛄'}, {n:'Febrero 2027',k:'febrero',e:'💌'}, {n:'Marzo 2027',k:'marzo',e:'🌸'},
+  {n:'Abril 2027',k:'abril',e:'🐣'}, {n:'Mayo 2027',k:'mayo',e:'🌷'}, {n:'Junio 2027',k:'junio',e:'☀️'}, {n:'Julio 2027',k:'julio',e:'🏖️'}
 ];
 
 function esc(s){ const d = document.createElement('div'); d.textContent = (s == null ? '' : s); return d.innerHTML; }
@@ -29,7 +14,23 @@ function norm(s){ return String(s || '').toLowerCase().normalize('NFD').replace(
 function folderId(u){ const m = String(u || '').match(/drive\.google\.com\/(?:drive\/(?:u\/\d+\/)?folders\/|folderview\?id=|open\?id=)([\w-]+)/); return m ? m[1] : ''; }
 function driveId(u){ const m = String(u || '').match(/drive\.google\.com\/file\/d\/([\w-]+)/); return m ? m[1] : null; }
 
-/* Reloj y Saludo Dinámico */
+/* Puerta */
+document.documentElement.classList.add('bloqueado');
+$('#btnPuerta').addEventListener('click', () => {
+  $('#puerta').classList.add('abierta');
+  setTimeout(() => {
+    $('#puerta').remove(); document.documentElement.classList.remove('bloqueado');
+    window.puertaAbierta = true;
+    document.documentElement.classList.add('puerta-abierta');
+    document.dispatchEvent(new Event('puerta-abierta'));
+  }, 1700);
+});
+
+/* Aparecer al hacer scroll */
+const obs = ('IntersectionObserver' in window) ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); } }), {threshold:.08}) : null;
+document.querySelectorAll('.reveal').forEach(el => obs ? obs.observe(el) : el.classList.add('in'));
+
+/* Saludo, fecha y hora */
 let ultSaludo = '';
 function reloj(){
   const n = new Date(), h = n.getHours();
@@ -37,213 +38,195 @@ function reloj(){
   if (h >= 6 && h < 12){ e = '☀️'; t = '¡Buenos días!'; }
   else if (h >= 12 && h < 19){ e = '🌤️'; t = '¡Buenas tardes!'; }
   else { e = '🌙'; t = '¡Buenas noches!'; }
-
-  if (t !== ultSaludo){
-    ultSaludo = t;
-    const sEmo = $('#saludoEmo'), sTxt = $('#saludoTxt');
-    if (sEmo) sEmo.textContent = e;
-    if (sTxt) sTxt.textContent = t;
-  }
-
-  const fTxt = $('#fechaTexto'), hTxt = $('#horaTexto');
-  if (fTxt) fTxt.textContent = DIAS[n.getDay()] + ', ' + n.getDate() + ' de ' + MESES[n.getMonth()] + ' de ' + n.getFullYear();
-  if (hTxt) hTxt.textContent = n.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  if (t !== ultSaludo){ ultSaludo = t; $('#saludoEmo').textContent = e; $('#saludoTxt').textContent = t; }
+  $('#fecha').textContent = DIAS[n.getDay()] + ' ' + n.getDate() + ' de ' + MESES[n.getMonth()] + ' de ' + n.getFullYear();
+  $('#horaTxt').textContent = n.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
 }
-reloj();
-setInterval(reloj, 1000);
+reloj(); setInterval(reloj, 1000);
 
-/* Máscara de Fecha DD/MM/AAAA */
+/* Máscara DD/MM/AAAA */
 function mascara(inp){
-  if (!inp) return;
   inp.addEventListener('input', () => {
     const d = inp.value.replace(/\D/g, '').slice(0, 8);
     inp.value = d.length > 4 ? d.slice(0,2) + '/' + d.slice(2,4) + '/' + d.slice(4)
               : d.length > 2 ? d.slice(0,2) + '/' + d.slice(2) : d;
   });
 }
-mascara($('#fecha2'));
-mascara($('#waFecha'));
+mascara($('#fecha2')); mascara($('#waFecha'));
 
-/* Llamadas a la API de Google Apps Script */
 async function llamar(params){
   const r = await fetch(API + '?' + new URLSearchParams(params));
   return r.json();
 }
 
-/* Cargar Datos Públicos Escolares */
+/* Datos públicos */
 async function cargar(){
   try{
     const d = await llamar({action:'publico'});
     if (!d.ok) throw new Error();
 
-    // Avisos en pizarrón
-    const avisosEl = $('#avisosLista');
-    if (avisosEl){
-      avisosEl.innerHTML = d.avisos && d.avisos.length ? d.avisos.map(a =>
-        '<div class="gis' + (a.importante ? ' imp' : '') + '"><h3>' +
-        (a.importante ? '★ ' : '') + esc(a.titulo) + '</h3>' +
-        '<div class="meta">' + esc(a.fecha) + '</div>' +
-        '<p>' + esc(a.mensaje) + '</p></div>'
-      ).join('') : '<p class="gis">No hay avisos pendientes en el pizarrón por ahora.</p>';
+    $('#avisosLista').innerHTML = d.avisos.length ? d.avisos.map((a, i) =>
+      '<div class="gis' + (a.importante ? ' imp' : '') + '" style="--i:' + i + '"><h3>' + (a.importante ? '⚠️ ' : '✏️ ') + esc(a.titulo) + '</h3>' +
+      '<div class="meta">' + esc(a.fecha) + '</div><p>' + esc(a.mensaje) + '</p></div>').join('')
+      : '<p class="gis-vacio">No hay avisos por ahora 😊</p>';
+
+    $('#calLista').innerHTML = d.calendario.length ? d.calendario.map(c =>
+      '<div class="item evento"><div class="ico emo">' + esc(c.icono || '📚') + '</div><div><h3>' + esc(c.evento) + '</h3>' +
+      '<div class="meta">' + esc(c.fecha) + '</div>' + (c.descripcion ? '<p>' + esc(c.descripcion) + '</p>' : '') + '</div></div>').join('')
+      : '<p class="vacio">No hay actividades próximas <span class="emo">🎒</span></p>';
+
+    const dest = d.destacados || [];
+    $('#destLista').innerHTML = dest.length ? dest.map(x => {
+      const id = driveId(x.enlace);
+      const media = id
+        ? '<div class="media"><iframe loading="lazy" allowfullscreen allow="autoplay; fullscreen" src="https://drive.google.com/file/d/' + encodeURIComponent(id) + '/preview" title="' + esc(x.titulo) + '"></iframe></div>'
+        : (x.enlace ? '' : '');
+      const link = (!id && x.enlace) ? '<a class="btn sec" target="_blank" rel="noopener" href="' + esc(seguro(x.enlace)) + '">Ver ➜</a>' : '';
+      return '<div class="dcard">' + media + '<div class="txt"><h3><span class="emo p">🌟</span> ' + esc(x.titulo) + '</h3>' +
+        (x.descripcion ? '<p>' + esc(x.descripcion) + '</p>' : '') + link + '</div></div>';
+    }).join('') : '<p class="vacio">Pronto verás aquí lo más especial del mes <span class="emo">🎬</span></p>';
+
+    if (d.cumples.length){
+      $('#cumpLista').innerHTML = d.cumples.map(c => '<span class="chip">🎈 ' + esc(c.nombre) + '</span>').join('');
+      $('#felicidades').hidden = false;
+    } else {
+      $('#cumpLista').innerHTML = '<span class="chip">Este mes no hay cumpleaños 🎈</span>';
     }
 
-    // Calendario escolar
-    const calEl = $('#calLista');
-    if (calEl){
-      calEl.innerHTML = d.calendario && d.calendario.length ? d.calendario.map(c =>
-        '<div class="item-evento"><div class="ico">' + esc(c.icono || '📅') + '</div><div>' +
-        '<h3>' + esc(c.evento) + '</h3>' +
-        '<div class="meta">' + esc(c.fecha) + '</div>' +
-        (c.descripcion ? '<p>' + esc(c.descripcion) + '</p>' : '') +
-        '</div></div>'
-      ).join('') : '<p style="color:var(--slate-500);font-size:0.9rem;">No hay actividades próximas agendadas.</p>';
-    }
-
-    // Lo más relevante / Destacados
-    const destEl = $('#destLista');
-    if (destEl){
-      const dest = d.destacados || [];
-      destEl.innerHTML = dest.length ? dest.map(x => {
-        const id = driveId(x.enlace);
-        const fId = folderId(x.enlace);
-        const media = id
-          ? '<div style="position:relative;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;margin-bottom:8px;"><iframe loading="lazy" allowfullscreen src="https://drive.google.com/file/d/' + encodeURIComponent(id) + '/preview" style="position:absolute;inset:0;width:100%;height:100%;border:0;"></iframe></div>'
-          : '';
-        const link = fId
-          ? '<button type="button" class="btn-dorado" onclick="abrirVisor(\'' + esc(fId) + '\',\'' + esc(x.titulo || 'Destacado') + '\',\'' + esc(seguro(x.enlace)) + '\')">Ver carpeta ➜</button>'
-          : ((!id && x.enlace) ? '<a class="btn-dorado" target="_blank" rel="noopener" href="' + esc(seguro(x.enlace)) + '">Ver en Drive ↗</a>' : '');
-        return '<div style="background:#fff;border:1px solid var(--slate-200);border-radius:12px;padding:12px;margin-bottom:12px;">' +
-          media + '<h3 style="margin:4px 0;color:var(--navy);font-size:1rem;">' + esc(x.titulo || 'Destacado del mes') + '</h3>' +
-          (x.descripcion ? '<p style="margin:4px 0 8px;font-size:0.85rem;color:var(--slate-700);">' + esc(x.descripcion) + '</p>' : '') +
-          link + '</div>';
-      }).join('') : '<p style="color:var(--slate-500);font-size:0.9rem;">Pronto verás aquí lo más especial del mes.</p>';
-    }
-
-    // Cumpleaños del mes
-    const cumpEl = $('#cumpLista'), feliEl = $('#felicidades');
-    if (cumpEl){
-      if (d.cumples && d.cumples.length){
-        cumpEl.innerHTML = d.cumples.map(c => '<span class="chip-cumple">🎈 ' + esc(c.nombre) + '</span>').join('');
-        if (feliEl) feliEl.hidden = false;
-      } else {
-        cumpEl.innerHTML = '<span class="chip-cumple">Este mes no hay cumpleaños registrados</span>';
-        if (feliEl) feliEl.hidden = true;
-      }
-    }
-
-    // Llenar select de alumnos
     const opciones = '<option value="">Elige al alumno(a)</option>' +
-      (d.alumnos || []).map(a => '<option value="' + esc(a.id) + '">' + esc(a.nombre) + '</option>').join('');
-    if ($('#alumno')) $('#alumno').innerHTML = opciones;
-    if ($('#waAlumno')) $('#waAlumno').innerHTML = opciones;
-
-    if (d.hayWhatsapp && $('#btnWa')) $('#btnWa').hidden = false;
-
+      d.alumnos.map(a => '<option value="' + esc(a.id) + '">' + esc(a.nombre) + '</option>').join('');
+    $('#alumno').innerHTML = opciones;
+    $('#waAlumno').innerHTML = opciones;
+    if (d.hayWhatsapp) $('#btnWa').hidden = false;
   }catch(e){
-    console.error(e);
-    if ($('#avisosLista')) $('#avisosLista').innerHTML = '<p class="gis">No se pudo cargar la información. Revisa tu conexión a internet.</p>';
+    const m = '<p class="vacio">No se pudo cargar la información. Revisa tu internet e inténtalo de nuevo.</p>';
+    $('#avisosLista').innerHTML = '<p class="gis-vacio">No se pudo cargar. Revisa tu internet.</p>'; $('#calLista').innerHTML = m; $('#destLista').innerHTML = m;
+    $('#cumpLista').innerHTML = '<span class="chip">🎈</span>';
+    $('#alumno').innerHTML = '<option value="">No disponible</option>';
   }
 }
 
-/* Acceso al Aula Virtual */
-const formAcceso = $('#formAcceso');
-if (formAcceso){
-  formAcceso.addEventListener('submit', async ev => {
-    ev.preventDefault();
-    const msg = $('#msgAcceso'), btn = $('#btnEntrar');
-    if (msg) { msg.style.color = 'var(--navy)'; msg.textContent = 'Verificando con el padrón escolar...'; }
-    if (btn) btn.disabled = true;
+/* Acceso de los papás */
+$('#formAcceso').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const msg = $('#msgAcceso'), btn = $('#btnEntrar');
+  msg.className = 'msg'; msg.textContent = 'Verificando…'; btn.disabled = true;
+  try{
+    const d = await llamar({action:'acceso', id:$('#alumno').value, fecha:$('#fecha2').value});
+    if (!d.ok){ msg.className = 'msg err'; msg.textContent = d.error || 'No se pudo entrar.'; return; }
+    msg.textContent = '';
+    $('#tituloAula').innerHTML = '<span class="emo">🏫</span> Aula de ' + esc(d.nombre);
+    $('#carpetas').innerHTML = CICLO.map(m => {
+      const c = d.carpetas.find(x => norm(x.mes).indexOf(m.k) === 0);
+      return c
+        ? '<a class="carpeta" target="_blank" rel="noopener" data-folder="' + esc(folderId(c.enlace)) + '" data-titulo="' + esc(m.n) + '" href="' + esc(seguro(c.enlace)) + '"><span class="ico emo">' + m.e + '</span>' + esc(m.n) + '<small>📁 Abrir</small></a>'
+        : '<div class="carpeta off"><span class="ico emo">' + m.e + '</span>' + esc(m.n) + '<small>🔒 Próximamente</small></div>';
+    }).join('');
+    $('#galTit').hidden = !d.galeria.length; $('#galeria').hidden = !d.galeria.length;
+    $('#galeria').innerHTML = d.galeria.map(g =>
+      '<a class="carpeta" target="_blank" rel="noopener" data-folder="' + esc(folderId(g.enlace)) + '" data-titulo="' + esc(g.titulo) + '" href="' + esc(seguro(g.enlace)) + '"><span class="ico emo">📸</span>' + esc(g.titulo) +
+      (g.descripcion ? '<small>' + esc(g.descripcion) + '</small>' : '') + '</a>').join('');
+    $('#formAcceso').hidden = true; $('#privado').hidden = false; $('#contacto').hidden = true;
+  }catch(e){
+    msg.className = 'msg err'; msg.textContent = 'Error de conexión. Inténtalo de nuevo.';
+  }finally{ btn.disabled = false; }
+});
 
-    try{
-      const d = await llamar({action:'acceso', id:$('#alumno').value, fecha:$('#fecha2').value});
-      if (!d.ok){
-        if (msg) { msg.style.color = '#B91C1C'; msg.textContent = d.error || 'Datos no coinciden. Revisa la fecha.'; }
-        return;
-      }
-      if (msg) msg.textContent = '';
-      $('#tituloAula').textContent = 'Aula Virtual: ' + d.nombre;
-      $('#carpetas').innerHTML = CICLO.map(m => {
-        const c = d.carpetas ? d.carpetas.find(x => norm(x.mes).indexOf(m.k) === 0) : null;
-        return c
-          ? '<a class="carpeta-item" target="_blank" rel="noopener" data-folder="' + esc(folderId(c.enlace)) + '" data-titulo="' + esc(m.n) + '" href="' + esc(seguro(c.enlace)) + '"><span class="ico">' + m.e + '</span><span>' + esc(m.n) + '</span><small>📁 Abrir</small></a>'
-          : '<div class="carpeta-item off"><span class="ico">' + m.e + '</span><span>' + esc(m.n) + '</span><small>🔒 Próximamente</small></div>';
-      }).join('');
+$('#btnSalir').addEventListener('click', () => {
+  $('#privado').hidden = true; $('#formAcceso').hidden = false; $('#contacto').hidden = false;
+  $('#fecha2').value = ''; $('#carpetas').innerHTML = ''; $('#galeria').innerHTML = '';
+});
 
-      const galTit = $('#galTit'), galeria = $('#galeria');
-      if (galTit && galeria){
-        const tieneGal = d.galeria && d.galeria.length;
-        galTit.hidden = !tieneGal;
-        galeria.hidden = !tieneGal;
-        if (tieneGal){
-          galeria.innerHTML = d.galeria.map(g =>
-            '<a class="carpeta-item" target="_blank" rel="noopener" data-folder="' + esc(folderId(g.enlace)) + '" data-titulo="' + esc(g.titulo) + '" href="' + esc(seguro(g.enlace)) + '"><span class="ico">📸</span><span>' + esc(g.titulo) + '</span>' +
-            (g.descripcion ? '<small>' + esc(g.descripcion) + '</small>' : '') + '</a>'
-          ).join('');
-        }
-      }
-
-      $('#formAcceso').hidden = true;
-      $('#privado').hidden = false;
-      $('#contacto').hidden = true;
-    }catch(e){
-      if (msg) { msg.style.color = '#B91C1C'; msg.textContent = 'Error de conexión. Inténtalo de nuevo.'; }
-    }finally{
-      if (btn) btn.disabled = false;
-    }
-  });
-}
-
-const btnSalir = $('#btnSalir');
-if (btnSalir){
-  btnSalir.addEventListener('click', () => {
-    $('#privado').hidden = true;
-    $('#formAcceso').hidden = false;
-    $('#contacto').hidden = false;
-    $('#fecha2').value = '';
-    $('#carpetas').innerHTML = '';
-  });
-}
-
-/* WhatsApp Seguro */
-const btnWa = $('#btnWa'), dlgWa = $('#dlgWa'), btnWaCerrar = $('#btnWaCerrar'), formWa = $('#formWa');
-if (btnWa && dlgWa){
-  btnWa.addEventListener('click', () => {
-    $('#msgWa').textContent = '';
-    dlgWa.showModal();
-  });
-}
-if (btnWaCerrar && dlgWa){
-  btnWaCerrar.addEventListener('click', () => {
-    dlgWa.close();
+/* WhatsApp protegido */
+$('#btnWa').addEventListener('click', () => { $('#msgWa').textContent = ''; $('#dlgWa').showModal(); });
+$('#btnWaCerrar').addEventListener('click', () => { $('#dlgWa').close(); $('#waFecha').value = ''; });
+$('#formWa').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const msg = $('#msgWa'), btn = $('#btnWaIr');
+  msg.className = 'msg'; msg.textContent = 'Verificando…'; btn.disabled = true;
+  try{
+    const d = await llamar({action:'whatsapp', id:$('#waAlumno').value, fecha:$('#waFecha').value});
+    if (!d.ok){ msg.className = 'msg err'; msg.textContent = d.error || 'No se pudo abrir WhatsApp.'; return; }
     $('#waFecha').value = '';
-  });
-}
-if (formWa){
-  formWa.addEventListener('submit', async ev => {
-    ev.preventDefault();
-    const msg = $('#msgWa'), btn = $('#btnWaIr');
-    if (msg) { msg.style.color = 'var(--navy)'; msg.textContent = 'Validando alumno...'; }
-    if (btn) btn.disabled = true;
+    window.location.href = d.url;
+  }catch(e){
+    msg.className = 'msg err'; msg.textContent = 'Error de conexión. Inténtalo de nuevo.';
+  }finally{ btn.disabled = false; }
+});
 
-    try{
-      const d = await llamar({action:'whatsapp', id:$('#waAlumno').value, fecha:$('#waFecha').value});
-      if (!d.ok){
-        if (msg) { msg.style.color = '#B91C1C'; msg.textContent = d.error || 'No se pudo abrir WhatsApp.'; }
-        return;
-      }
-      $('#waFecha').value = '';
-      window.location.href = d.url;
-    }catch(e){
-      if (msg) { msg.style.color = '#B91C1C'; msg.textContent = 'Error de conexión.'; }
-    }finally{
-      if (btn) btn.disabled = false;
+/* Animar automáticamente cualquier emoji de la página */
+const RE_EMO = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|[\u{1F3FB}-\u{1F3FF}])*/gu;
+const VARS = ['', 'w', 'p'];
+let nEmo = 0;
+function envTexto(t){
+  const p = t.parentNode;
+  if (!p || !p.closest || p.closest('.emo,select,option,script,style,textarea,title')) return;
+  const txt = t.nodeValue;
+  RE_EMO.lastIndex = 0;
+  if (!RE_EMO.test(txt)) return;
+  RE_EMO.lastIndex = 0;
+  const frag = document.createDocumentFragment();
+  let last = 0, m;
+  while ((m = RE_EMO.exec(txt))){
+    if (m.index > last) frag.appendChild(document.createTextNode(txt.slice(last, m.index)));
+    const sp = document.createElement('span');
+    sp.className = 'emo ' + VARS[nEmo % 3];
+    sp.style.animationDelay = (-(nEmo % 7) * 0.35) + 's';
+    nEmo++;
+    sp.textContent = m[0];
+    frag.appendChild(sp);
+    last = m.index + m[0].length;
+  }
+  if (last < txt.length) frag.appendChild(document.createTextNode(txt.slice(last)));
+  p.replaceChild(frag, t);
+}
+function envolver(n){
+  if (n.nodeType === 3) return envTexto(n);
+  if (n.nodeType !== 1 || n.classList.contains('emo') || /^(SCRIPT|STYLE|SELECT|OPTION|TEXTAREA|INPUT|IFRAME|CANVAS)$/.test(n.tagName)) return;
+  Array.from(n.childNodes).forEach(envolver);
+}
+envolver(document.body);
+new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(envolver))).observe(document.body, {childList:true, subtree:true});
+
+/* Partículas de luz */
+(function(){
+  const cv = document.getElementById('luces'), cx = cv.getContext('2d');
+  const COL = [[0,229,255],[255,45,149],[255,214,0],[124,77,255],[0,230,118]];
+  let W, H, P = [];
+  function nueva(ini){
+    return { x: Math.random()*W, y: ini ? Math.random()*H : H + 20, r: 1.8 + Math.random()*3.4,
+             vy: .15 + Math.random()*.5, ph: Math.random()*6.28, sp: .6 + Math.random()*1.4, c: COL[Math.floor(Math.random()*COL.length)] };
+  }
+  function medir(){
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = W*dpr; cv.height = H*dpr; cx.setTransform(dpr,0,0,dpr,0,0);
+    const n = Math.round(Math.min(48, Math.max(26, W/11)));
+    while (P.length < n) P.push(nueva(true));
+    P.length = n;
+  }
+  function pinta(t){
+    cx.clearRect(0, 0, W, H);
+    for (const p of P){
+      p.y -= p.vy; p.x += Math.sin(t/1400*p.sp + p.ph)*.35;
+      if (p.y < -25) Object.assign(p, nueva(false));
+      const a = .4 + .5*Math.abs(Math.sin(t/700*p.sp + p.ph));
+      const rgb = p.c[0] + ',' + p.c[1] + ',' + p.c[2];
+      const g = cx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*5);
+      g.addColorStop(0, 'rgba(' + rgb + ',' + a + ')');
+      g.addColorStop(.3, 'rgba(' + rgb + ',' + (a*.45) + ')');
+      g.addColorStop(1, 'rgba(' + rgb + ',0)');
+      cx.fillStyle = g; cx.beginPath(); cx.arc(p.x, p.y, p.r*5, 0, 6.2832); cx.fill();
+      cx.fillStyle = 'rgba(255,255,255,' + Math.min(1, a + .2) + ')'; cx.beginPath(); cx.arc(p.x, p.y, p.r*.55, 0, 6.2832); cx.fill();
     }
-  });
-}
+    requestAnimationFrame(pinta);
+  }
+  medir(); window.addEventListener('resize', medir); requestAnimationFrame(pinta);
+})();
 
-/* Visor para Carpetas de Drive */
+/* Ventana emergente para carpetas de Drive */
 function abrirVisor(id, titulo, url){
-  $('#visorTitulo').textContent = titulo || 'Carpeta de Evidencias';
+  $('#visorTitulo').textContent = titulo || 'Carpeta';
   $('#visorDrive').href = seguro(url);
   $('#visorMarco').src = 'https://drive.google.com/embeddedfolderview?id=' + encodeURIComponent(id) + '#grid';
   $('#visor').hidden = false;
@@ -255,34 +238,25 @@ function cerrarVisor(){
   $('#visorMarco').src = 'about:blank';
   document.documentElement.classList.remove('bloqueado');
 }
-const visorAtras = $('#visorAtras');
-if (visorAtras){
-  visorAtras.addEventListener('click', () => {
-    if (history.state && history.state.visor) history.back();
-    else cerrarVisor();
-  });
-}
-window.addEventListener('popstate', () => {
-  if (!$('#visor').hidden) cerrarVisor();
-});
+$('#visorAtras').addEventListener('click', () => { if (history.state && history.state.visor) history.back(); else cerrarVisor(); });
+window.addEventListener('popstate', () => { if (!$('#visor').hidden) cerrarVisor(); });
 document.addEventListener('click', ev => {
-  const a = ev.target.closest('a.carpeta-item[data-folder]');
+  const a = ev.target.closest('a.carpeta[data-folder]');
   if (!a || !a.dataset.folder || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button === 1) return;
   ev.preventDefault();
   abrirVisor(a.dataset.folder, a.dataset.titulo, a.href);
 });
 
-/* OneSignal Notificaciones */
-window.OneSignalDeferred = window.OneSignalDeferred || [];
-setTimeout(() => {
-  const m = $('#msgNotif');
-  if (m && m.textContent.indexOf('Cargando') === 0) {
-    m.textContent = 'Avisos disponibles directamente en este portal escolar.';
-  }
-}, 5000);
+cargar();
 
+/* Notificaciones (OneSignal): el worker vive en la misma carpeta que esta página */
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+setTimeout(function(){
+  var m = document.getElementById('msgNotif');
+  if (m && m.textContent.indexOf('Preparando') === 0) m.textContent = 'No se pudo cargar el servicio de notificaciones. Revisa tu conexión o desactiva el bloqueador de anuncios.';
+}, 7000);
 OneSignalDeferred.push(async function(OneSignal){
-  const btn = $('#btnNotif'), msg = $('#msgNotif');
+  const btn = document.getElementById('btnNotif'), msg = document.getElementById('msgNotif');
   try{
     const base = location.pathname.replace(/[^\/]*$/, '');
     await OneSignal.init({
@@ -292,44 +266,19 @@ OneSignalDeferred.push(async function(OneSignal){
       serviceWorkerOverrideForTypical: true,
       notifyButton: { enable: false }
     });
-    if (!OneSignal.Notifications.isPushSupported()){
-      if (msg) msg.textContent = 'Este navegador no admite notificaciones push.';
-      return;
-    }
+    if (!OneSignal.Notifications.isPushSupported()){ msg.textContent = 'Este navegador no admite notificaciones.'; return; }
+    const marcar = () => OneSignal.User.addTag('escuela', 'si');
     function estado(){
       if (OneSignal.User.PushSubscription.optedIn){
-        if (btn) btn.hidden = true;
-        if (msg) msg.textContent = '✅ Notificaciones activadas. Recibirás avisos importantes en tu dispositivo.';
-        OneSignal.User.addTag('escuela', 'si');
+        btn.hidden = true; msg.textContent = '✅ Notificaciones activadas. Te avisaremos cuando haya novedades.'; marcar();
       } else if (Notification.permission === 'denied'){
-        if (btn) btn.hidden = true;
-        if (msg) msg.textContent = 'Notificaciones bloqueadas en el navegador. Puedes activarlas en la configuración del sitio.';
-      } else {
-        if (btn) btn.hidden = false;
-        if (msg) msg.textContent = 'Toca el botón para recibir los avisos directamente en tu teléfono.';
-      }
+        btn.hidden = true; msg.textContent = 'Las notificaciones están bloqueadas en tu navegador. Puedes activarlas desde los permisos del sitio.';
+      } else { btn.hidden = false; msg.textContent = 'Toca el botón para recibir los avisos.'; }
     }
     estado();
-    if (btn) btn.addEventListener('click', async () => {
-      await OneSignal.Notifications.requestPermission();
-      estado();
-    });
+    btn.addEventListener('click', async () => { await OneSignal.Notifications.requestPermission(); estado(); });
     OneSignal.User.PushSubscription.addEventListener('change', estado);
   }catch(e){
-    if (msg) msg.textContent = 'Servicio de avisos disponible en la página escolar.';
+    msg.textContent = 'No se pudieron iniciar las notificaciones: ' + (e && e.message ? e.message : e);
   }
 });
-
-/* Efecto suave de aparición al hacer scroll (reveal) */
-const obs = ('IntersectionObserver' in window)
-  ? new IntersectionObserver(es => es.forEach(e => {
-      if (e.isIntersecting){
-        e.target.classList.add('in');
-        obs.unobserve(e.target);
-      }
-    }), { threshold: 0.1, rootMargin: '0px 0px -40px 0px' })
-  : null;
-document.querySelectorAll('.reveal').forEach(el => obs ? obs.observe(el) : el.classList.add('in'));
-
-// Iniciar carga
-cargar();
