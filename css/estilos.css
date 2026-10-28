@@ -580,3 +580,103 @@ footer{
   main>section:not(#cumples){padding:22px 16px;border-radius:18px}
   main>section:not(#cumples)>h2{font-size:1.3rem}
 }
+
+
+/* Rediseño institucional integrado: Rafael Ramírez Web Modernizer */
+:root{
+  --navy:#0B1B3D;
+  --navy2:#17396E;
+  --gold:#D4AF37;
+  --flame:#C75B39;
+  --bg:#F3F6FB;
+  --card:#FFFFFF;
+  --ink:#17243B;
+  --muted:#596981;
+  --line:#DCE4EF;
+  --sombra-hover:0 18px 36px rgba(11,27,61,.16);
+}
+body{
+  color:var(--ink);
+  background:
+    radial-gradient(ellipse at 5% 10%,rgba(212,175,55,.09),transparent 28rem),
+    radial-gradient(ellipse at 95% 35%,rgba(23,57,110,.07),transparent 32rem),
+    #F3F6FB;
+}
+.banner{
+  background:
+    radial-gradient(ellipse at 50% -20%,rgba(212,175,55,.24),transparent 55%),
+    linear-gradient(135deg,#07152F 0%,#0B1B3D 48%,#17396E 100%);
+  border-bottom:6px solid var(--gold);
+}
+.banner::before{
+  background:linear-gradient(115deg,transparent 0 42%,rgba(255,255,255,.045) 42.2% 42.6%,transparent 42.8% 62%,rgba(212,175,55,.07) 62.2% 62.6%,transparent 62.8%);
+}
+.banner img{
+  border-color:var(--gold);
+  box-shadow:0 0 0 7px rgba(212,175,55,.13),0 0 32px rgba(212,175,55,.22),0 16px 32px rgba(0,0,0,.25);
+}
+.banner .cct{
+  color:#F8EBC0;
+  border-color:rgba(212,175,55,.45);
+  background:rgba(255,255,255,.08);
+}
+.saludo{
+  border:1px solid #D8E0EC;
+  border-top:4px solid var(--gold);
+  box-shadow:0 14px 34px rgba(11,27,61,.11);
+}
+main>section:not(#cumples){
+  border-color:#DEE5EF;
+  box-shadow:0 10px 28px rgba(11,27,61,.07);
+}
+main>section:not(#cumples)::before{
+  background:linear-gradient(90deg,#0B1B3D 0%,#31598F 62%,#D4AF37 100%);
+}
+main>section:not(#cumples)>h2{color:var(--navy)}
+main>section:not(#cumples)>h2::after{
+  background:linear-gradient(90deg,var(--gold),rgba(212,175,55,0));
+}
+.item{border-left-color:#31598F}
+.item.imp{border-left-color:#C75B39}
+.notif{border-color:#E4CF87;border-left-color:var(--gold)}
+.btn:not(.wa){
+  background:linear-gradient(135deg,#0B1B3D,#234779);
+  box-shadow:0 4px 0 #061329,0 8px 18px rgba(11,27,61,.15);
+}
+.btn:not(.wa):hover{background:linear-gradient(135deg,#17396E,#31598F)}
+.btn.sec{
+  background:linear-gradient(135deg,#F4F6FA,#E6ECF5);
+  color:#0B1B3D;
+  box-shadow:0 4px 0 #CBD5E3;
+}
+.dcard,.carpeta{border-color:#DCE4EF}
+.carpeta{background:linear-gradient(145deg,#fff,#F5F7FA)}
+a.carpeta:hover{border-color:var(--gold);background:#FFFCF0}
+.cumple{
+  background:
+    radial-gradient(circle at 12% 0%,rgba(255,255,255,.2),transparent 32%),
+    linear-gradient(135deg,#0B1B3D 0%,#234779 64%,#334477 100%);
+  border-bottom-color:var(--gold);
+}
+.chip{border-color:var(--gold);color:#0B1B3D}
+footer{
+  background:linear-gradient(120deg,#07152F,#0B1B3D 58%,#17396E);
+  border-top-color:var(--gold);
+}
+#puerta .placa{
+  background:linear-gradient(145deg,#07152F,#17396E);
+  border-color:var(--gold);
+}
+#btnPuerta{
+  color:#0B1B3D;
+  background:linear-gradient(180deg,#F7E5A1,#D4AF37);
+  box-shadow:0 7px 0 #92751D,0 14px 30px rgba(0,0,0,.4);
+}
+input,select,textarea{border-color:#D6DFEB!important}
+input:focus,select:focus,textarea:focus{
+  border-color:#31598F!important;
+  box-shadow:0 0 0 4px rgba(49,89,143,.12)!important;
+}
+@media(prefers-reduced-motion:reduce){
+  #luces{display:none}
+}
