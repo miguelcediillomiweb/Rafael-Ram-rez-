@@ -188,7 +188,6 @@ dialog{border:0;border-radius:18px;padding:20px;width:min(92vw,420px);box-shadow
 dialog::backdrop{background:rgba(10,20,50,.6)}
 dialog h3{color:var(--navy);margin-bottom:4px}
 
-
 /* ---------- Orillas neón ---------- */
 @keyframes neonBorde{
   0%,100%{border-color:#00e5ff;box-shadow:0 0 6px #00e5ff,0 0 20px rgba(0,229,255,.75),inset 0 0 10px rgba(0,229,255,.3)}
@@ -207,7 +206,6 @@ footer{border-top:0}
 footer::before{top:0}
 #luces{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
 .saludo h2 .emo{font-size:1.9rem}
-
 
 /* ---------- Pizarrón de avisos ---------- */
 .pizarron{position:relative;margin:4px 0 30px;padding:18px 16px 14px;border:12px solid #9a6a3a;border-radius:10px;color:#f4f4ec;
@@ -229,7 +227,6 @@ footer::before{top:0}
 @keyframes escribe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 .emo.dedo{animation:empuja 1s ease-in-out infinite;font-size:1.5rem}
 @keyframes empuja{0%,100%{transform:translateX(0)}50%{transform:translateX(9px)}}
-
 
 /* ---------- Ventana emergente de carpetas ---------- */
 #visor{position:fixed;inset:0;z-index:9000;background:#0e1a3a;display:flex;flex-direction:column}
@@ -256,8 +253,6 @@ footer>*{position:relative;z-index:1}
 .corazones span:nth-child(4){left:72%;animation-delay:-1s}
 .corazones span:nth-child(5){left:90%;animation-delay:-3s}
 @keyframes subirCor{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-110px);opacity:0}}
-
-
 
 </style>
 <link rel="stylesheet" href="css/estilos.css">
@@ -572,7 +567,6 @@ function envolver(n){
 envolver(document.body);
 new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(envolver))).observe(document.body, {childList:true, subtree:true});
 
-
 /* Ventana emergente para carpetas de Drive */
 function abrirVisor(id, titulo, url){
   $('#visorTitulo').textContent = titulo || 'Carpeta';
@@ -634,77 +628,6 @@ OneSignalDeferred.push(async function(OneSignal){
   }
 });
 </script>
-<script>
-/* Halloween: todo vive en una capa fija a la pantalla y empieza cuando se abre la puerta */
-(function(){
-  'use strict';
-  var BASE = 'temporada-halloween/assets/', d = document, root = null, started = false;
-  function rnd(a, b){ return a + Math.random() * (b - a); }
-  function img(file, cls){
-    var el = new Image(), lista = [file.normalize('NFC'), file.normalize('NFD')], i = 0;
-    if (lista[0] === lista[1]) lista.pop();
-    lista = lista.map(function(f){ return BASE + encodeURIComponent(f); });
-    el.className = cls; el.alt = ''; el.decoding = 'async'; el.draggable = false;
-    el.onerror = function(){ i++; if (i < lista.length) el.src = lista[i]; else el.remove(); };
-    el.src = lista[0];
-    return el;
-  }
-  function caminante(){
-    if (d.hidden){ setTimeout(caminante, 2000); return; }
-    var vw = window.innerWidth, vh = window.innerHeight, w = Math.min(96, Math.max(56, vw * .14));
-    var el = img('araña camina.webp', 'hwn-walker'); el.style.width = w + 'px';
-    var y = rnd(90, Math.max(100, vh - w - 120)), der = Math.random() < .5, x0 = der ? -w : vw, x1 = der ? vw : -w, sx = der ? 1 : -1;
-    el.style.top = y + 'px'; root.appendChild(el);
-    var a = el.animate([{transform: 'translateX(' + x0 + 'px) scaleX(' + sx + ')'}, {transform: 'translateX(' + x1 + 'px) scaleX(' + sx + ')'}],
-      {duration: Math.abs(x1 - x0) / rnd(70, 110) * 1000, easing: 'linear'});
-    a.onfinish = function(){ el.remove(); setTimeout(caminante, rnd(6000, 12000)); };
-  }
-  function fantasma(){
-    if (d.hidden){ setTimeout(fantasma, 3000); return; }
-    var vw = window.innerWidth, vh = window.innerHeight, w = Math.min(108, Math.max(60, vw * .16));
-    var el = img('fantasma.webp', 'hwn-ghost'); el.style.width = w + 'px';
-    var y = rnd(100, Math.max(110, vh - w - 130)), der = Math.random() < .5, x0 = der ? -w : vw, x1 = der ? vw : -w, dx = x1 - x0;
-    el.style.top = y + 'px'; root.appendChild(el);
-    var a = el.animate([
-      {transform: 'translate(' + x0 + 'px,0)', opacity: 0},
-      {transform: 'translate(' + (x0 + dx * .15) + 'px,-14px)', opacity: .95, offset: .15},
-      {transform: 'translate(' + (x0 + dx * .4) + 'px,12px)', opacity: .95, offset: .4},
-      {transform: 'translate(' + (x0 + dx * .65) + 'px,-16px)', opacity: .95, offset: .65},
-      {transform: 'translate(' + (x0 + dx * .88) + 'px,10px)', opacity: .95, offset: .88},
-      {transform: 'translate(' + x1 + 'px,0)', opacity: 0}
-    ], {duration: rnd(7000, 10000), easing: 'linear'});
-    a.onfinish = function(){ el.remove(); setTimeout(fantasma, rnd(7000, 13000)); };
-  }
-  function sorpresa(){
-    if (!d.hidden){
-      var vw = window.innerWidth, vh = window.innerHeight, w = Math.min(104, Math.max(56, vw * .14));
-      var el = img('spider.webp', 'hwn-pop-spider'); el.style.width = w + 'px';
-      el.style.left = rnd(8, Math.max(9, vw - w - 8)) + 'px'; el.style.top = rnd(100, Math.max(105, vh - w - 130)) + 'px';
-      root.appendChild(el);
-      var a = el.animate([{opacity: 0, transform: 'scale(.45) rotate(-15deg)'}, {opacity: 1, transform: 'scale(1) rotate(5deg)', offset: .2},
-        {opacity: 1, transform: 'scale(1) rotate(-5deg)', offset: .75}, {opacity: 0, transform: 'scale(.72) rotate(12deg)'}], {duration: 2800, easing: 'ease-in-out'});
-      a.onfinish = function(){ el.remove(); };
-    }
-    setTimeout(sorpresa, rnd(20000, 32000));
-  }
-  function iniciar(){
-    if (started || !d.body) return;
-    started = true;
-    d.documentElement.classList.add('hwn-on');
-    root = d.createElement('div'); root.className = 'hwn-root'; root.setAttribute('aria-hidden', 'true');
-    root.appendChild(img('araña esquina.webp', 'hwn-spider-corner'));
-    root.appendChild(img('calabaza bailando.webp', 'hwn-pumpkin-dance'));
-    root.appendChild(img('calabaza.webp', 'hwn-pumpkin'));
-    var hang = d.createElement('div'); hang.className = 'hwn-hang';
-    var hilo = d.createElement('div'); hilo.className = 'hwn-thread'; hang.appendChild(hilo);
-    hang.appendChild(img('araña colgante.webp', 'hwn-hanging-spider'));
-    root.appendChild(hang);
-    d.body.appendChild(root);
-    setTimeout(caminante, 1500); setTimeout(fantasma, 3000); setTimeout(sorpresa, 9000);
-  }
-  if (window.puertaAbierta || !d.getElementById('puerta')) iniciar();
-  else d.addEventListener('puerta-abierta', iniciar, {once: true});
-})();
-</script>
+
 </body>
 </html>
