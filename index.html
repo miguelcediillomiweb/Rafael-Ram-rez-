@@ -258,27 +258,13 @@ footer>*{position:relative;z-index:1}
 @keyframes subirCor{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-110px);opacity:0}}
 
 
-/* ---------- Halloween ---------- */
-.hwn-root{position:fixed;inset:0;width:100%;height:100%;z-index:8000;pointer-events:none;overflow:hidden;transform:translateZ(0);--hwn-H:min(56vh,460px);--hwn-sombra:drop-shadow(0 3px 6px rgba(0,0,0,.38))}
-.hwn-root img{position:absolute;height:auto;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none;background:transparent;filter:var(--hwn-sombra)}
-.hwn-spider-corner{top:0;left:0;width:clamp(72px,18vw,132px);transform-origin:0 0;animation:hwn-sway 5.8s ease-in-out infinite}
-.hwn-pumpkin-dance{position:fixed;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:clamp(68px,18vw,126px);transform-origin:50% 85%;animation:hwn-baila 2.1s ease-in-out infinite}
-.hwn-pumpkin{position:fixed;left:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:clamp(62px,15vw,108px);animation:hwn-brilla 2.8s ease-in-out infinite}
-.hwn-hang{position:absolute;top:0;left:50%;width:0;height:0}
-.hwn-thread{position:absolute;left:-1px;top:0;width:2px;height:var(--hwn-H);transform-origin:50% 0;border-radius:2px;background:linear-gradient(180deg,rgba(20,20,20,.75),rgba(90,90,90,.45));animation:hwn-hilo 8s ease-in-out infinite alternate}
-.hwn-root img.hwn-hanging-spider{left:0;top:0;width:clamp(54px,12vw,88px);margin-left:calc(clamp(54px,12vw,88px) / -2);transform-origin:50% 0;animation:hwn-baja 8s ease-in-out infinite alternate}
-.hwn-root img.hwn-walker,.hwn-root img.hwn-ghost,.hwn-root img.hwn-pop-spider{left:0;top:0;will-change:transform,opacity}
-html.hwn-on footer{padding-bottom:118px}
-@keyframes hwn-sway{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.8deg)}}
-@keyframes hwn-baila{0%,100%{transform:rotate(-5deg) translateY(0)}25%{transform:rotate(5deg) translateY(-5px)}50%{transform:rotate(-4deg) translateY(0)}75%{transform:rotate(4deg) translateY(-3px)}}
-@keyframes hwn-brilla{0%,100%{transform:translateY(0) rotate(-2deg);filter:var(--hwn-sombra) brightness(1)}50%{transform:translateY(-5px) rotate(3deg);filter:var(--hwn-sombra) brightness(1.12)}}
-@keyframes hwn-hilo{from{transform:scaleY(.06)}to{transform:scaleY(1)}}
-@keyframes hwn-baja{from{transform:translateY(calc(var(--hwn-H) * .06)) rotate(-3deg)}to{transform:translateY(var(--hwn-H)) rotate(3deg)}}
+
 </style>
+<link rel="stylesheet" href="css/estilos.css">
+<link rel="stylesheet" href="css/componentes.css">
+<link rel="stylesheet" href="css/animaciones.css">
 </head>
 <body>
-<canvas id="luces" aria-hidden="true"></canvas>
-
 <!-- Puerta del salón -->
 <div id="puerta" role="dialog" aria-label="Entrada a la escuela">
   <div class="hoja izq"><div class="panel vent"></div><div class="panel p1"></div><div class="panel p2"></div><div class="manija"></div></div>
@@ -586,41 +572,6 @@ function envolver(n){
 envolver(document.body);
 new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(envolver))).observe(document.body, {childList:true, subtree:true});
 
-/* Partículas de luz */
-(function(){
-  const cv = document.getElementById('luces'), cx = cv.getContext('2d');
-  const COL = [[0,229,255],[255,45,149],[255,214,0],[124,77,255],[0,230,118]];
-  let W, H, P = [];
-  function nueva(ini){
-    return { x: Math.random()*W, y: ini ? Math.random()*H : H + 20, r: 1.8 + Math.random()*3.4,
-             vy: .15 + Math.random()*.5, ph: Math.random()*6.28, sp: .6 + Math.random()*1.4, c: COL[Math.floor(Math.random()*COL.length)] };
-  }
-  function medir(){
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = window.innerWidth; H = window.innerHeight;
-    cv.width = W*dpr; cv.height = H*dpr; cx.setTransform(dpr,0,0,dpr,0,0);
-    const n = Math.round(Math.min(48, Math.max(26, W/11)));
-    while (P.length < n) P.push(nueva(true));
-    P.length = n;
-  }
-  function pinta(t){
-    cx.clearRect(0, 0, W, H);
-    for (const p of P){
-      p.y -= p.vy; p.x += Math.sin(t/1400*p.sp + p.ph)*.35;
-      if (p.y < -25) Object.assign(p, nueva(false));
-      const a = .4 + .5*Math.abs(Math.sin(t/700*p.sp + p.ph));
-      const rgb = p.c[0] + ',' + p.c[1] + ',' + p.c[2];
-      const g = cx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*5);
-      g.addColorStop(0, 'rgba(' + rgb + ',' + a + ')');
-      g.addColorStop(.3, 'rgba(' + rgb + ',' + (a*.45) + ')');
-      g.addColorStop(1, 'rgba(' + rgb + ',0)');
-      cx.fillStyle = g; cx.beginPath(); cx.arc(p.x, p.y, p.r*5, 0, 6.2832); cx.fill();
-      cx.fillStyle = 'rgba(255,255,255,' + Math.min(1, a + .2) + ')'; cx.beginPath(); cx.arc(p.x, p.y, p.r*.55, 0, 6.2832); cx.fill();
-    }
-    requestAnimationFrame(pinta);
-  }
-  medir(); window.addEventListener('resize', medir); requestAnimationFrame(pinta);
-})();
 
 /* Ventana emergente para carpetas de Drive */
 function abrirVisor(id, titulo, url){
