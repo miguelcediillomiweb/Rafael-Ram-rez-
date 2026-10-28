@@ -1,0 +1,10 @@
+/* Componentes de interfaz: estados, formularios y paneles */
+[hidden]{display:none!important}
+button,a,input,select{-webkit-tap-highlight-color:transparent}
+.btn,.carpeta,#visorAtras,#visorDrive{touch-action:manipulation}
+.btn:focus-visible,.carpeta:focus-visible,#visorAtras:focus-visible,#visorDrive:focus-visible{outline:3px solid #e6b33d;outline-offset:3px}
+.item.evento,.dcard,.carpeta,.notif,.pizarron,#formAcceso{break-inside:avoid}
+#privado[hidden],#formAcceso[hidden],#galTit[hidden],#galeria[hidden]{display:none!important}
+#visor[hidden]{display:none!important}
+#visor:not([hidden]){display:flex}
+#dlgWa:not([open]){display:none}
