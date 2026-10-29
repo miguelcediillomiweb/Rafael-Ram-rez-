@@ -760,3 +760,33 @@ input:focus,select:focus,textarea:focus{
 #visorAtras:active{box-shadow:0 1px 0 #75141d}
 .destacado-ver{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font:inherit}
 #visorMarco{min-height:0}
+
+
+/* Invitaciones de eventos: botón luminoso con pulso discreto */
+.evento-contenido{min-width:0;flex:1}
+.sello-exito{
+  display:inline-block;margin:8px 0 10px;padding:7px 13px;
+  color:#fff;background:linear-gradient(135deg,#c62828,#8e1111);
+  border:2px solid #ffd9a0;border-radius:8px;
+  font-family:var(--head);font-weight:700;line-height:1.12;text-align:center;
+  transform:rotate(-2deg);box-shadow:0 4px 12px rgba(142,17,17,.2);
+}
+.invitacion-btn{
+  position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;
+  margin-top:12px;padding:11px 20px;color:#fff;
+  background:linear-gradient(135deg,#7b2ff7,#2868d7 55%,#00a6b8);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 5px 0 rgba(39,48,126,.22),0 0 18px rgba(91,91,255,.24);
+  animation:invitacionPulso 2s ease-in-out infinite;
+}
+.invitacion-btn::after{
+  content:"";position:absolute;top:-20%;left:-70%;width:35%;height:140%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.72),transparent);
+  transform:skewX(-22deg);animation:invitacionBrillo 3s ease-in-out infinite;
+}
+@keyframes invitacionPulso{
+  0%,100%{filter:brightness(1);box-shadow:0 5px 0 rgba(39,48,126,.22),0 0 0 0 rgba(81,104,255,.24)}
+  50%{filter:brightness(1.12);box-shadow:0 5px 0 rgba(39,48,126,.22),0 0 0 7px rgba(81,104,255,0)}
+}
+@keyframes invitacionBrillo{0%,55%{left:-70%}100%{left:140%}}
+@media(prefers-reduced-motion:reduce){.invitacion-btn,.invitacion-btn::after{animation:none}}
