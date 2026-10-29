@@ -305,7 +305,10 @@ function cerrarVisor(){
   $('#visorMarco').src = 'about:blank';
   document.documentElement.classList.remove('bloqueado');
 }
-$('#visorAtras').addEventListener('click', () => { if (history.state && history.state.visor) history.back(); else cerrarVisor(); });
+$('#visorAtras').addEventListener('click', () => {
+  cerrarVisor();
+  if (history.state && history.state.visor) history.replaceState(null, '', location.href);
+});
 window.addEventListener('popstate', () => { if (!$('#visor').hidden) cerrarVisor(); });
 /* Regresar a la web cuando YouTube informe que terminó el video de invitación */
 window.addEventListener('message', ev => {
@@ -440,7 +443,7 @@ OneSignalDeferred.push(async function(OneSignal){
         try { history.replaceState(null,'',location.pathname); } catch(_){}
         document.documentElement.innerHTML='<head><meta name="viewport" content="width=device-width,initial-scale=1"><title></title><style>html,body{margin:0;width:100%;height:100%;background:#fff}</style></head><body></body>';
       }
-    },10000);
+    },1000);
   }
   // La pantalla de despedida queda como cierre final; después intenta salir.
 
