@@ -82,7 +82,11 @@ async function cargar(){
       '<p>Madres y padres de familia: se les invita a disfrutar de la participación de sus hijos en las diferentes actividades con motivo del Día de Muertos. El evento inició a partir de las 8:30 de la mañana.</p>' +
       '<div class="sello-exito" aria-label="Este evento fue un éxito">¡ESTE EVENTO<br>FUE UN ÉXITO!</div>' +
       '</div></div>';
-    const calendarioActual = d.calendario.length ? d.calendario.map(c =>
+    // Evitar que el aviso de Día de Muertos aparezca dos veces en la web.
+    // El registro puede seguir en la hoja de cálculo; aquí se oculta el duplicado.
+    const calendarioSinDuplicado = (d.calendario || []).filter(c =>
+      !norm((c.evento || '') + ' ' + (c.descripcion || '')).includes('dia de muertos'));
+    const calendarioActual = calendarioSinDuplicado.length ? calendarioSinDuplicado.map(c =>
       '<div class="item evento"><div class="ico emo">' + esc(c.icono || '📚') + '</div><div><h3>' + esc(c.evento) + '</h3>' +
       '<div class="meta">' + esc(c.fecha) + '</div>' + (c.descripcion ? '<p>' + esc(c.descripcion) + '</p>' : '') + '</div></div>').join('')
       : '<p class="vacio">No hay actividades próximas <span class="emo">🎒</span></p>';
@@ -94,7 +98,7 @@ async function cargar(){
       const media = id
         ? '<div class="media"><iframe loading="lazy" allowfullscreen allow="autoplay; fullscreen" src="https://drive.google.com/file/d/' + encodeURIComponent(id) + '/preview" title="' + esc(x.titulo) + '"></iframe></div>'
         : (x.enlace ? '' : '');
-      const link = (!id && x.enlace) ? '<a class="btn sec" target="_blank" rel="noopener" href="' + esc(seguro(x.enlace)) + '">Ver ➜</a>' : '';
+      const link = (!id && x.enlace) ? '<button class="btn sec destacado-ver" type="button" data-popup-url="' + esc(seguro(x.enlace)) + '" data-popup-title="' + esc(x.titulo) + '">Ver ➜</button>' : '';
       return '<div class="dcard">' + media + '<div class="txt"><h3><span class="emo p">🌟</span> ' + esc(x.titulo) + '</h3>' +
         (x.descripcion ? '<p>' + esc(x.descripcion) + '</p>' : '') + link + '</div></div>';
     }).join('') : '<p class="vacio">Pronto verás aquí lo más especial del mes <span class="emo">🎬</span></p>';
@@ -238,13 +242,17 @@ new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(envolver))).obse
 })();
 
 /* Ventana emergente para carpetas de Drive */
-function abrirVisor(id, titulo, url){
-  $('#visorTitulo').textContent = titulo || 'Carpeta';
+function mostrarVisor(titulo, url, contenido){
+  $('#visorTitulo').textContent = titulo || 'Contenido destacado';
   $('#visorDrive').href = seguro(url);
-  $('#visorMarco').src = 'https://drive.google.com/embeddedfolderview?id=' + encodeURIComponent(id) + '#grid';
+  $('#visorMarco').src = contenido || seguro(url);
+  $('#visorMarco').title = titulo || 'Contenido destacado';
   $('#visor').hidden = false;
   document.documentElement.classList.add('bloqueado');
   history.pushState({visor:1}, '');
+}
+function abrirVisor(id, titulo, url){
+  mostrarVisor(titulo || 'Carpeta', url, 'https://drive.google.com/embeddedfolderview?id=' + encodeURIComponent(id) + '#grid');
 }
 function cerrarVisor(){
   $('#visor').hidden = true;
@@ -253,6 +261,18 @@ function cerrarVisor(){
 }
 $('#visorAtras').addEventListener('click', () => { if (history.state && history.state.visor) history.back(); else cerrarVisor(); });
 window.addEventListener('popstate', () => { if (!$('#visor').hidden) cerrarVisor(); });
+document.addEventListener('click', ev => {
+  const b = ev.target.closest('button.destacado-ver[data-popup-url]');
+  if (!b) return;
+  const url = seguro(b.dataset.popupUrl);
+  if (url === '#') return;
+  const file = driveId(url);
+  const folder = folderId(url);
+  let contenido = url;
+  if (file) contenido = 'https://drive.google.com/file/d/' + encodeURIComponent(file) + '/preview';
+  else if (folder) contenido = 'https://drive.google.com/embeddedfolderview?id=' + encodeURIComponent(folder) + '#grid';
+  mostrarVisor(b.dataset.popupTitle || 'Lo más relevante del mes', url, contenido);
+});
 document.addEventListener('click', ev => {
   const a = ev.target.closest('a.carpeta[data-folder]');
   if (!a || !a.dataset.folder || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button === 1) return;
