@@ -14,6 +14,10 @@ function norm(s){ return String(s || '').toLowerCase().normalize('NFD').replace(
 function folderId(u){ const m = String(u || '').match(/drive\.google\.com\/(?:drive\/(?:u\/\d+\/)?folders\/|folderview\?id=|open\?id=)([\w-]+)/); return m ? m[1] : ''; }
 function driveId(u){ const m = String(u || '').match(/drive\.google\.com\/file\/d\/([\w-]+)/); return m ? m[1] : null; }
 
+/* Evitar que el navegador restaure la página desplazada al abrirla */
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.addEventListener('pageshow', () => window.scrollTo(0, 0));
+
 /* Puerta */
 document.documentElement.classList.add('bloqueado');
 $('#btnPuerta').addEventListener('click', () => {
