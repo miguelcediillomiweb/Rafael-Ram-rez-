@@ -270,7 +270,7 @@ document.addEventListener('click', ev => {
   const file = driveId(url);
   const folder = folderId(url);
   let contenido = url;
-  const yt = url.match(/(?:youtube\\.com\\/(?:shorts\/|watch\\?v=)|youtu\\.be\/)([A-Za-z0-9_-]{11})/i);
+  const yt = url.match(/(?:youtube\.com\/(?:shorts\/|watch\?v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/i);
   if (yt) {
     // El botón se pulsa conscientemente; se solicita reproducción automática dentro del visor.
     contenido = 'https://www.youtube-nocookie.com/embed/' + yt[1] + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&controls=1';
