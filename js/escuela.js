@@ -282,3 +282,64 @@ OneSignalDeferred.push(async function(OneSignal){
     msg.textContent = 'No se pudieron iniciar las notificaciones: ' + (e && e.message ? e.message : e);
   }
 });
+
+
+/* Despedida interactiva: frases educativas y emojis diferentes en cada visita */
+(function(){
+  const boton=document.getElementById('btnSalirWeb');
+  const pantalla=document.getElementById('pantallaDespedida');
+  const campoEmojis=document.getElementById('despedidaEmojis');
+  const frase=document.getElementById('pensamientoTexto');
+  const autor=document.getElementById('pensamientoAutor');
+  const volver=document.getElementById('btnVolverWeb');
+  if(!boton||!pantalla||!campoEmojis||!frase||!autor||!volver)return;
+  const pensamientos=[
+    {texto:'La educación es el arma más poderosa que puedes usar para cambiar el mundo.',autor:'Nelson Mandela'},
+    {texto:'Se necesita un pueblo entero para educar a un niño.',autor:'Proverbio africano'},
+    {texto:'La educación no cambia el mundo: cambia a las personas que van a cambiar el mundo.',autor:'Paulo Freire'},
+    {texto:'Enseñar es dejar una huella en la vida de otra persona.',autor:'Adaptación de una reflexión educativa'},
+    {texto:'Cada niño es un artista; el desafío está en seguir siéndolo cuando crece.',autor:'Pablo Picasso'},
+    {texto:'La mente no es un vaso que hay que llenar, sino una lámpara que hay que encender.',autor:'Plutarco'},
+    {texto:'Juntos podemos lograr que cada pequeño paso se convierta en un gran aprendizaje.',autor:'Reflexión educativa'},
+    {texto:'La educación es la llave que abre las puertas de las oportunidades.',autor:'Reflexión educativa'},
+    {texto:'Para educar a un niño hace falta la tribu entera.',autor:'Proverbio africano'},
+    {texto:'Los niños no recuerdan todo lo que les dices, pero sí cómo los haces sentir.',autor:'Reflexión educativa'}
+  ];
+  const emojis=['📚','✏️','🎒','🍎','⭐','🌈','🧩','🖍️','🎨','🔬','🦋','🌻','🪁','📖','💡','🧠','🏫','📝','🌟','🧸','🎓','❤️','🪴','☀️','🕊️','🦉','🧮','🪄'];
+  function aleatorio(arr){return arr[Math.floor(Math.random()*arr.length)]}
+  function llenarEmojis(){
+    campoEmojis.replaceChildren();
+    const total=Math.min(32,Math.max(18,Math.round(window.innerWidth/18)));
+    for(let i=0;i<total;i++){
+      const span=document.createElement('span');
+      span.className='despedida-emoji';
+      span.textContent=aleatorio(emojis);
+      span.style.left=(Math.random()*100)+'%';
+      span.style.fontSize=(1.15+Math.random()*1.5)+'rem';
+      span.style.animationDuration=(7+Math.random()*9)+'s';
+      span.style.animationDelay=(-Math.random()*12)+'s';
+      span.style.setProperty('--deriva',((Math.random()*140)-70)+'px');
+      campoEmojis.appendChild(span);
+    }
+  }
+  boton.addEventListener('click',()=>{
+    const p=aleatorio(pensamientos);
+    frase.textContent=p.texto;
+    autor.textContent='— '+p.autor;
+    llenarEmojis();
+    pantalla.hidden=false;
+    document.body.style.overflow='hidden';
+    document.getElementById('despedidaTitulo').focus?.({preventScroll:true});
+    history.pushState({despedidaEscuela:true},'','#despedida');
+  });
+  volver.addEventListener('click',()=>{
+    pantalla.hidden=true;
+    document.body.style.overflow='';
+    campoEmojis.replaceChildren();
+    if(location.hash==='#despedida')history.replaceState(history.state,'',location.pathname+location.search);
+    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+  });
+  window.addEventListener('popstate',()=>{
+    if(!pantalla.hidden){pantalla.hidden=true;document.body.style.overflow='';campoEmojis.replaceChildren();}
+  });
+})();
