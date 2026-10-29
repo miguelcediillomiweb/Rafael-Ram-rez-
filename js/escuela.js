@@ -69,15 +69,24 @@ async function cargar(){
     const d = await llamar({action:'publico'});
     if (!d.ok) throw new Error();
 
-    $('#avisosLista').innerHTML = d.avisos.length ? d.avisos.map((a, i) =>
-      '<div class="gis' + (a.importante ? ' imp' : '') + '" style="--i:' + i + '"><h3>' + (a.importante ? '⚠️ ' : '✏️ ') + esc(a.titulo) + '</h3>' +
-      '<div class="meta">' + esc(a.fecha) + '</div><p>' + esc(a.mensaje) + '</p></div>').join('')
-      : '<p class="gis-vacio">No hay avisos por ahora 😊</p>';
+    $('#avisosLista').innerHTML =
+      '<div class="gis bienvenida-pizarron">' +
+      '<h3>🌟 ¡Bienvenidos! 🌟</h3>' +
+      '<p class="bienvenida-texto">📚 Bienvenidos plataforma de evidencias<br><strong>Segundo A</strong><br>Ciclo escolar <strong>2026-2027</strong> 🎒</p>' +
+      '</div>';
 
-    $('#calLista').innerHTML = d.calendario.length ? d.calendario.map(c =>
+    const eventoMuertos = '<div class="item evento evento-cerrado">' +
+      '<div class="ico emo">💀</div><div class="evento-contenido">' +
+      '<h3>Evento Día de Muertos en la Rafael Ramírez</h3>' +
+      '<div class="meta">29/10/2026 · 8:30 de la mañana</div>' +
+      '<p>Madres y padres de familia: se les invita a disfrutar de la participación de sus hijos en las diferentes actividades con motivo del Día de Muertos. El evento inició a partir de las 8:30 de la mañana.</p>' +
+      '<div class="sello-exito" aria-label="Este evento fue un éxito">¡ESTE EVENTO<br>FUE UN ÉXITO!</div>' +
+      '</div></div>';
+    const calendarioActual = d.calendario.length ? d.calendario.map(c =>
       '<div class="item evento"><div class="ico emo">' + esc(c.icono || '📚') + '</div><div><h3>' + esc(c.evento) + '</h3>' +
       '<div class="meta">' + esc(c.fecha) + '</div>' + (c.descripcion ? '<p>' + esc(c.descripcion) + '</p>' : '') + '</div></div>').join('')
       : '<p class="vacio">No hay actividades próximas <span class="emo">🎒</span></p>';
+    $('#calLista').innerHTML = eventoMuertos + calendarioActual;
 
     const dest = d.destacados || [];
     $('#destLista').innerHTML = dest.length ? dest.map(x => {
