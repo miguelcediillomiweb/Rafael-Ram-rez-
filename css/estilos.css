@@ -830,3 +830,10 @@ input:focus,select:focus,textarea:focus{
 .sello-exito{position:relative;z-index:2;align-self:center;display:block;width:max-content;max-width:100%;margin:14px auto 18px;padding:10px 24px;border:4px solid #c51d35;border-radius:5px;background:linear-gradient(135deg,#fff,#fff1f2);color:#c51d35;font-family:var(--head);font-size:clamp(1.1rem,4.5vw,1.55rem);font-weight:700;line-height:1.05;text-align:center;letter-spacing:.07em;transform:rotate(-3deg);box-shadow:0 5px 0 rgba(133,13,31,.14),0 0 0 5px rgba(197,29,53,.09);text-shadow:1px 1px 0 #fff}
 .evento-cerrado .sello-exito{order:0}
 @media(max-width:420px){.cuenta-regresiva{padding:12px 8px}.contador-unidades{gap:5px}.contador-unidades>span{padding:10px 2px 8px}.contador-unidades small{letter-spacing:-.02em}}
+
+
+/* Cuenta regresiva ocupa el ancho completo de la tarjeta */
+.evento-cerrado .evento-contenido>.cuenta-regresiva{display:block;align-self:stretch;width:100%;max-width:none;min-width:0;margin:18px 0 4px;padding:16px 14px;border:3px solid #f2b705;border-radius:16px;background:linear-gradient(135deg,#fff8d7,#fff 58%,#eaf4ff);box-sizing:border-box}
+.evento-cerrado .sello-exito{position:absolute;z-index:2;top:12px;right:12px;transform:rotate(5deg);background:#c51f32;color:#fff;border:3px solid #fff;outline:2px solid #c51f32;border-radius:5px;padding:7px 12px;font-family:var(--head);font-size:clamp(1rem,3.8vw,1.35rem);font-weight:800;letter-spacing:.08em;line-height:1.1;text-align:center;box-shadow:0 5px 12px rgba(0,0,0,.24)}
+.evento-cerrado .evento-contenido>h3{padding-right:112px;min-height:44px}
+@media(max-width:420px){.evento-cerrado .sello-exito{top:10px;right:8px;padding:5px 8px}.evento-cerrado .evento-contenido>h3{padding-right:95px}}
