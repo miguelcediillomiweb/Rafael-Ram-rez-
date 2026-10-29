@@ -115,7 +115,7 @@ async function cargar(){
       '<div class="ico emo">💀</div><div class="evento-contenido">' +
       '<h3>Evento Día de Muertos en la Rafael Ramírez</h3>' +
       '<div class="meta">29/10/2026 · 8:30 de la mañana</div>' +
-      '<div class="sello-exito" aria-label="Evento agotado">SOLD OUT</div>' +
+      '<div class="sello-exito" aria-label="Evento finalizado">EVENTO FINALIZADO</div>' +
       '<p>Madres y padres de familia: gracias por acompañarnos y disfrutar de la participación de sus hijos en el Día de Muertos.</p>' +
       '<button class="btn invitacion-btn destacado-ver" type="button" data-popup-url="https://youtube.com/shorts/5xaJE-PWyLs" data-popup-title="Invitación · Día de Muertos">🎬 Invitación <span aria-hidden="true">✨</span></button>' +
       '<div class="cuenta-regresiva" data-fecha-evento="2026-10-29T08:30:00" aria-live="off"><strong>Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado"></p></div>' +
