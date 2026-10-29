@@ -79,8 +79,9 @@ async function cargar(){
       '<div class="ico emo">💀</div><div class="evento-contenido">' +
       '<h3>Evento Día de Muertos en la Rafael Ramírez</h3>' +
       '<div class="meta">29/10/2026 · 8:30 de la mañana</div>' +
-      '<p>Madres y padres de familia: se les invita a disfrutar de la participación de sus hijos en las diferentes actividades con motivo del Día de Muertos. El evento inició a partir de las 8:30 de la mañana.</p>' +
       '<div class="sello-exito" aria-label="Este evento fue un éxito">¡ESTE EVENTO<br>FUE UN ÉXITO!</div>' +
+      '<p>Madres y padres de familia: gracias por disfrutar la participación de sus hijos en las diferentes actividades con motivo del Día de Muertos. Conservamos esta invitación como evidencia de un evento que fue todo un éxito.</p>' +
+      '<button class="btn invitacion-btn" type="button" data-popup-url="https://youtube.com/shorts/5xaJE-PWyLs" data-popup-title="Invitación · Día de Muertos">🎬 Invitación <span aria-hidden="true">✨</span></button>' +
       '</div></div>';
     // Evitar que el aviso de Día de Muertos aparezca dos veces en la web.
     // El registro puede seguir en la hoja de cálculo; aquí se oculta el duplicado.
@@ -269,7 +270,11 @@ document.addEventListener('click', ev => {
   const file = driveId(url);
   const folder = folderId(url);
   let contenido = url;
-  if (file) contenido = 'https://drive.google.com/file/d/' + encodeURIComponent(file) + '/preview';
+  const yt = url.match(/(?:youtube\\.com\\/(?:shorts\/|watch\\?v=)|youtu\\.be\/)([A-Za-z0-9_-]{11})/i);
+  if (yt) {
+    // El botón se pulsa conscientemente; se solicita reproducción automática dentro del visor.
+    contenido = 'https://www.youtube-nocookie.com/embed/' + yt[1] + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&controls=1';
+  } else if (file) contenido = 'https://drive.google.com/file/d/' + encodeURIComponent(file) + '/preview';
   else if (folder) contenido = 'https://drive.google.com/embeddedfolderview?id=' + encodeURIComponent(folder) + '#grid';
   mostrarVisor(b.dataset.popupTitle || 'Lo más relevante del mes', url, contenido);
 });
