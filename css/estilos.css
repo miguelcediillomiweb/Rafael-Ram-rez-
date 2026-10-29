@@ -222,3 +222,34 @@ footer>*{position:relative;z-index:2}
 @keyframes subirCorazon{0%{transform:translateY(0) scale(.8);opacity:0}15%{opacity:.8}100%{transform:translateY(-130px) scale(1.2);opacity:0}}
 
 @media (prefers-reduced-motion:reduce){.emo,.saludo-emo,.globos span,.pastel .llama,.chip-cumple,.avatar,.avatar .ojo,.btn-regresar,.flecha,.flecha-arriba,.latido,.corazones span{animation:none!important}}
+
+/* Botón de salida y pantalla de despedida */
+.salir-web{
+  position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:.65rem;
+  width:min(100%,460px);margin:1rem auto 0;padding:1rem 1.3rem;border:1px solid rgba(242,183,5,.8)!important;
+  border-radius:16px!important;color:#fff!important;font-weight:800;letter-spacing:.2px;
+  background:linear-gradient(115deg,#14264f,#253f76 48%,#14264f)!important;
+  box-shadow:0 8px 22px rgba(12,28,65,.22),inset 0 1px 0 rgba(255,255,255,.15)!important;
+}
+.salir-web .luz-recorrido{position:absolute;inset:-60% auto -60% -35%;width:22%;transform:rotate(22deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),rgba(255,255,255,.75),rgba(255,223,112,.4),transparent);filter:blur(1px);animation:luzBotonSalida 3.8s ease-in-out infinite;pointer-events:none;z-index:-1}
+@keyframes luzBotonSalida{0%{left:-35%}65%,100%{left:125%}}
+.salir-web:focus-visible,.despedida button:focus-visible{outline:3px solid #f2b705;outline-offset:4px}
+.despedida[hidden]{display:none!important}
+.despedida{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;overflow:auto;padding:clamp(14px,4vw,30px);background:radial-gradient(ellipse at 15% 10%,rgba(242,183,5,.24),transparent 34%),radial-gradient(ellipse at 90% 85%,rgba(82,139,230,.28),transparent 38%),linear-gradient(145deg,#09152f,#142d5d 55%,#0c1a39);color:#fff;isolation:isolate}
+.despedida:before{content:"";position:absolute;inset:0;z-index:-1;background-image:radial-gradient(rgba(255,255,255,.25) 1px,transparent 1.5px);background-size:31px 31px;opacity:.28;pointer-events:none}
+.despedida-luces{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.despedida-emoji{position:absolute;top:-60px;opacity:0;filter:drop-shadow(0 5px 9px rgba(0,0,0,.22));animation:emojiDespedida linear forwards;user-select:none}
+@keyframes emojiDespedida{0%{transform:translate3d(0,-20px,0) rotate(-18deg) scale(.7);opacity:0}12%{opacity:.8}85%{opacity:.75}100%{transform:translate3d(var(--deriva,30px),110vh,0) rotate(35deg) scale(1.12);opacity:0}}
+.despedida-contenido{position:relative;width:min(100%,650px);margin:auto;padding:clamp(24px,5vw,44px);text-align:center;border:1px solid rgba(255,220,125,.42);border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.07));box-shadow:0 22px 70px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);animation:despedidaAparece .65s cubic-bezier(.2,.8,.2,1) both}
+@keyframes despedidaAparece{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.despedida-icono{font-size:clamp(2.4rem,8vw,4rem);margin-bottom:.4rem;filter:drop-shadow(0 4px 12px rgba(255,210,80,.25))}
+.despedida-etiqueta{margin:0 0 .7rem;color:#ffdf82;font-size:.76rem;font-weight:800;letter-spacing:.14em}
+.despedida-contenido h1{margin:.2rem 0 1rem;color:#fff;font-family:var(--head,system-ui);font-size:clamp(1.8rem,6vw,2.7rem);line-height:1.12}
+.despedida-mensaje{max-width:540px;margin:0 auto 1.3rem;font-size:clamp(1rem,2.8vw,1.12rem);line-height:1.8;color:#f3f6ff}
+.pensamiento-educativo{position:relative;max-width:520px;margin:1.2rem auto 1.6rem;padding:1.25rem 1.3rem 1.1rem;border-radius:18px;background:rgba(4,14,35,.34);border:1px solid rgba(255,255,255,.13)}
+.pensamiento-comillas{display:block;color:#ffdf82;font-family:Georgia,serif;font-size:3rem;line-height:.65}
+.pensamiento-educativo p{margin:.55rem 0 .8rem;font-family:var(--head,system-ui);font-size:clamp(1.05rem,3vw,1.3rem);line-height:1.55;color:#fff}
+.pensamiento-educativo small{display:block;color:#ffdf82;font-weight:800;line-height:1.5}
+.despedida-volver{width:min(100%,300px);margin:auto!important;border:1px solid #ffe08a!important;color:#14264f!important;background:linear-gradient(120deg,#fff0b5,#e9bd45)!important;box-shadow:0 7px 0 #9e7920,0 12px 26px rgba(0,0,0,.2)!important}
+@media(max-width:480px){.despedida-contenido{border-radius:22px}.despedida-mensaje{line-height:1.7}.pensamiento-educativo{padding:1rem}}
+@media(prefers-reduced-motion:reduce){.salir-web .luz-recorrido,.despedida-contenido,.despedida-emoji{animation:none!important}.despedida-emoji{opacity:.2}}
