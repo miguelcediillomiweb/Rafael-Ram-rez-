@@ -99,8 +99,27 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><g transform="translate(6.2 6.2) scale(.5)"><path fill="#fff" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></g></svg>
       <span class="watxt"><b><span class="emo dedo">👉</span> Da clic aquí para contactar a la maestra Betty</b></span>
     </button>
+    <button class="btn salir-web" id="btnSalirWeb" type="button">
+      <span aria-hidden="true">🚪</span> Salir de la web <span class="luz-recorrido" aria-hidden="true"></span>
+    </button>
   </section>
 </main>
+
+<section id="pantallaDespedida" class="despedida" hidden role="dialog" aria-modal="true" aria-labelledby="despedidaTitulo">
+  <div class="despedida-luces" id="despedidaEmojis" aria-hidden="true"></div>
+  <div class="despedida-contenido">
+    <div class="despedida-icono" aria-hidden="true">🎒✨</div>
+    <p class="despedida-etiqueta">ESCUELA PRIMARIA RAFAEL RAMÍREZ</p>
+    <h1 id="despedidaTitulo">¡Gracias por tu visita!</h1>
+    <p class="despedida-mensaje">¡Gracias por visitar el espacio de evidencias! El éxito escolar es un trabajo en equipo entre casa y escuela. Vuelve las veces que gustes para seguir de cerca los grandes pasos de tu pequeño(a). 🎒✨</p>
+    <div class="pensamiento-educativo">
+      <span class="pensamiento-comillas" aria-hidden="true">“</span>
+      <p id="pensamientoTexto"></p>
+      <small id="pensamientoAutor"></small>
+    </div>
+    <button class="btn despedida-volver" id="btnVolverWeb" type="button">🏫 Volver a la web</button>
+  </div>
+</section>
 
 <div id="visor" hidden role="dialog" aria-label="Carpeta de actividades">
   <div class="visor-barra">
