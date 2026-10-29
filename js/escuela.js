@@ -118,7 +118,7 @@ async function cargar(){
       '<div class="sello-exito" aria-label="Este evento fue un éxito">¡ESTE EVENTO<br>FUE UN ÉXITO!</div>' +
       '<p>Madres y padres de familia: gracias por disfrutar la participación de sus hijos en las diferentes actividades con motivo del Día de Muertos. Conservamos esta invitación como evidencia de un evento que fue todo un éxito.</p>' +
       '<button class="btn invitacion-btn destacado-ver" type="button" data-popup-url="https://youtube.com/shorts/5xaJE-PWyLs" data-popup-title="Invitación · Día de Muertos">🎬 Invitación <span aria-hidden="true">✨</span></button>' +
-      '<div class="cuenta-regresiva" data-fecha-evento="2026-10-29T08:30:00" aria-live="off"><strong>⏳ Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado">🎉 ¡El evento ya se realizó! Conservamos aquí su invitación como evidencia.</p></div>' +
+      '<div class="cuenta-regresiva" data-fecha-evento="2026-10-29T08:30:00" aria-live="off"><strong>Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado">🎉 ¡El evento ya se realizó!</p></div>' +
       '</div></div>';
     // Evitar que el aviso de Día de Muertos aparezca dos veces en la web.
     // El registro puede seguir en la hoja de cálculo; aquí se oculta el duplicado.
@@ -131,7 +131,7 @@ async function cargar(){
         ? '<button class="btn invitacion-btn destacado-ver" type="button" data-popup-url="' + esc(seguro(enlaceInvitacion)) + '" data-popup-title="Invitación · ' + esc(c.evento || 'Evento escolar') + '">🎬 Invitación <span aria-hidden="true">✨</span></button>'
         : '';
       const contador = fechaContador
-        ? '<div class="cuenta-regresiva" data-fecha-evento="' + esc(fechaContador) + '" aria-live="off"><strong>⏳ Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado">🎉 ¡El evento ya se realizó! Conservamos aquí su invitación como evidencia.</p></div>'
+        ? '<div class="cuenta-regresiva" data-fecha-evento="' + esc(fechaContador) + '" aria-live="off"><strong>Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado">🎉 ¡El evento ya se realizó!</p></div>'
         : '';
       return '<div class="item evento"><div class="ico emo">' + esc(c.icono || '📚') + '</div><div class="evento-contenido"><h3>' + esc(c.evento) + '</h3>' +
         '<div class="meta">' + esc(c.fecha) + '</div>' + (c.descripcion ? '<p>' + esc(c.descripcion) + '</p>' : '') + botonInvitacion + contador + '</div></div>';
@@ -398,7 +398,14 @@ OneSignalDeferred.push(async function(OneSignal){
     {texto:'Los niños no recuerdan todo lo que les dices, pero sí cómo los haces sentir.',autor:'Reflexión educativa'}
   ];
   const emojis=['📚','✏️','🎒','🍎','⭐','🌈','🧩','🖍️','🎨','🔬','🦋','🌻','🪁','📖','💡','🧠','🏫','📝','🌟','🧸','🎓','❤️','🪴','☀️','🕊️','🦉','🧮','🪄'];
+  let ultimoPensamiento = '';
   function aleatorio(arr){return arr[Math.floor(Math.random()*arr.length)]}
+  function pensamientoDistinto(){
+    const opciones=pensamientos.filter(p=>p.texto!==ultimoPensamiento);
+    const elegido=aleatorio(opciones.length?opciones:pensamientos);
+    ultimoPensamiento=elegido.texto;
+    return elegido;
+  }
   function llenarEmojis(){
     campoEmojis.replaceChildren();
     const total=Math.min(32,Math.max(18,Math.round(window.innerWidth/18)));
@@ -415,7 +422,7 @@ OneSignalDeferred.push(async function(OneSignal){
     }
   }
   boton.addEventListener('click',()=>{
-    const p=aleatorio(pensamientos);
+    const p=pensamientoDistinto();
     frase.textContent=p.texto;
     autor.textContent='— '+p.autor;
     llenarEmojis();
@@ -425,17 +432,15 @@ OneSignalDeferred.push(async function(OneSignal){
     setTimeout(salirDelSitio,10000);
   });
   function salirDelSitio(){
-    // El navegador solo permite cerrar la pestaña si sus reglas lo autorizan.
+    // Chrome no permite cerrar por script una pestaña abierta manualmente.
+    // Se intenta cerrar y, si sigue abierta, se muestra una salida blanca limpia.
     window.close();
     setTimeout(()=>{
-      // Si no pudo cerrarse, intenta regresar a la página anterior.
-      if(history.length>1){
-        history.back();
-      }else{
-        // Último recurso: abandonar la página del sitio.
-        location.replace('about:blank');
+      if(!document.hidden){
+        try { history.replaceState(null,'',location.pathname); } catch(_){}
+        document.documentElement.innerHTML='<head><meta name="viewport" content="width=device-width,initial-scale=1"><title></title><style>html,body{margin:0;width:100%;height:100%;background:#fff}</style></head><body></body>';
       }
-    },180);
+    },10000);
   }
   // La pantalla de despedida queda como cierre final; después intenta salir.
 
