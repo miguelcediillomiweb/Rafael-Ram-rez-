@@ -307,6 +307,16 @@ function cerrarVisor(){
 }
 $('#visorAtras').addEventListener('click', () => { if (history.state && history.state.visor) history.back(); else cerrarVisor(); });
 window.addEventListener('popstate', () => { if (!$('#visor').hidden) cerrarVisor(); });
+/* Regresar a la web cuando YouTube informe que terminó el video de invitación */
+window.addEventListener('message', ev => {
+  if (!/^(https?:\/\/)?(www\.)?(youtube\.com|youtube-nocookie\.com)$/.test(ev.origin.replace(/^https?:\/\//,'')) &&
+      !/youtube(-nocookie)?\.com$/.test(new URL(ev.origin).hostname)) return;
+  if ($('#visor').hidden || !$('#visorMarco').src.includes('youtube-nocookie.com/embed/')) return;
+  try{
+    const data = typeof ev.data === 'string' ? JSON.parse(ev.data) : ev.data;
+    if (data && data.event === 'onStateChange' && Number(data.info) === 0) cerrarVisor();
+  }catch(_){}
+});
 document.addEventListener('click', ev => {
   const b = ev.target.closest('button.destacado-ver[data-popup-url]');
   if (!b) return;
@@ -318,7 +328,7 @@ document.addEventListener('click', ev => {
   const yt = url.match(/(?:youtube\.com\/(?:shorts\/|watch\?v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/i);
   if (yt) {
     // El botón se pulsa conscientemente; se solicita reproducción automática dentro del visor.
-    contenido = 'https://www.youtube-nocookie.com/embed/' + yt[1] + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&controls=1';
+    contenido = 'https://www.youtube-nocookie.com/embed/' + yt[1] + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&controls=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
   } else if (file) contenido = 'https://drive.google.com/file/d/' + encodeURIComponent(file) + '/preview';
   else if (folder) contenido = 'https://drive.google.com/embeddedfolderview?id=' + encodeURIComponent(folder) + '#grid';
   mostrarVisor(b.dataset.popupTitle || 'Lo más relevante del mes', url, contenido);
