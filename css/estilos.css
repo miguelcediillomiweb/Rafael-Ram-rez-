@@ -808,3 +808,25 @@ input:focus,select:focus,textarea:focus{
 .cuenta-regresiva.finalizado .contador-unidades{opacity:.72}
 .cuenta-regresiva.finalizado .contador-finalizado{display:block}
 @media(max-width:360px){.contador-unidades{gap:4px}.contador-unidades>span{padding:7px 1px}.contador-unidades small{font-size:.66rem}}
+
+
+/* Ajustes finales: cuenta regresiva a todo el ancho y sello de evento */
+#calLista .evento{display:block}
+#calLista .evento>.ico{display:none}
+#calLista .evento .evento-contenido{display:flex;flex-direction:column;align-items:stretch;width:100%;min-width:0}
+#calLista .evento .evento-contenido>h3,
+#calLista .evento .evento-contenido>.meta,
+#calLista .evento .evento-contenido>p,
+#calLista .evento .evento-contenido>.btn,
+#calLista .evento .evento-contenido>.cuenta-regresiva{width:100%;max-width:none}
+.cuenta-regresiva{display:block;width:100%;max-width:none;margin:18px 0 4px;padding:16px 14px;border:3px solid #f2b705;border-radius:16px;background:linear-gradient(135deg,#fff8d7,#fff 58%,#eaf4ff);color:#14306b;text-align:center;box-shadow:0 8px 20px rgba(20,48,107,.15)}
+.cuenta-regresiva>strong{display:block;font-family:var(--head);font-size:clamp(1.35rem,4.8vw,1.8rem);line-height:1.2;margin:0 0 12px}
+.contador-unidades{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%}
+.contador-unidades>span{min-width:0;padding:12px 4px 9px;border-radius:12px;background:linear-gradient(160deg,#14306b,#1f4a9c);color:#fff;box-shadow:0 4px 0 #0b1d47}
+.contador-unidades b{display:block;font-family:var(--head);font-size:clamp(1.25rem,5vw,2rem);line-height:1.1;font-variant-numeric:tabular-nums}
+.contador-unidades small{display:block;margin-top:5px;font-size:clamp(.68rem,2.6vw,.9rem);font-weight:800}
+.contador-finalizado{display:none;margin:12px 0 0!important;font-weight:800;color:#176b3a}
+.cuenta-regresiva.finalizado .contador-finalizado{display:block}
+.sello-exito{position:relative;z-index:2;align-self:center;display:block;width:max-content;max-width:100%;margin:14px auto 18px;padding:10px 24px;border:4px solid #c51d35;border-radius:5px;background:linear-gradient(135deg,#fff,#fff1f2);color:#c51d35;font-family:var(--head);font-size:clamp(1.1rem,4.5vw,1.55rem);font-weight:700;line-height:1.05;text-align:center;letter-spacing:.07em;transform:rotate(-3deg);box-shadow:0 5px 0 rgba(133,13,31,.14),0 0 0 5px rgba(197,29,53,.09);text-shadow:1px 1px 0 #fff}
+.evento-cerrado .sello-exito{order:0}
+@media(max-width:420px){.cuenta-regresiva{padding:12px 8px}.contador-unidades{gap:5px}.contador-unidades>span{padding:10px 2px 8px}.contador-unidades small{letter-spacing:-.02em}}
