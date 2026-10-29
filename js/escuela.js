@@ -333,7 +333,7 @@ OneSignalDeferred.push(async function(OneSignal){
     pantalla.hidden=false;
     document.body.style.overflow='hidden';
     document.getElementById('despedidaTitulo').focus?.({preventScroll:true});
-    setTimeout(salirDelSitio,6000);
+    setTimeout(salirDelSitio,10000);
   });
   function salirDelSitio(){
     // El navegador solo permite cerrar la pestaña si sus reglas lo autorizan.
