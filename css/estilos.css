@@ -751,3 +751,12 @@ input:focus,select:focus,textarea:focus{
   .evento-cerrado{padding:15px 12px}
   .evento-cerrado .sello-exito{margin-top:18px;letter-spacing:.025em}
 }
+
+
+/* Visor maximizado también para los contenidos de "Lo más relevante del mes" */
+#visor{box-sizing:border-box}
+#visor .visor-barra{padding-top:max(10px,env(safe-area-inset-top));}
+#visorAtras{background:linear-gradient(135deg,#a51f2b,#d92d3a);color:#fff;box-shadow:0 4px 0 #75141d}
+#visorAtras:active{box-shadow:0 1px 0 #75141d}
+.destacado-ver{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font:inherit}
+#visorMarco{min-height:0}
