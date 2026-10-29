@@ -115,10 +115,10 @@ async function cargar(){
       '<div class="ico emo">💀</div><div class="evento-contenido">' +
       '<h3>Evento Día de Muertos en la Rafael Ramírez</h3>' +
       '<div class="meta">29/10/2026 · 8:30 de la mañana</div>' +
-      '<div class="sello-exito" aria-label="Este evento fue un éxito">¡ESTE EVENTO<br>FUE UN ÉXITO!</div>' +
-      '<p>Madres y padres de familia: gracias por disfrutar la participación de sus hijos en las diferentes actividades con motivo del Día de Muertos. Conservamos esta invitación como evidencia de un evento que fue todo un éxito.</p>' +
+      '<div class="sello-exito" aria-label="Evento agotado">SOLD OUT</div>' +
+      '<p>Madres y padres de familia: gracias por acompañarnos y disfrutar de la participación de sus hijos en el Día de Muertos.</p>' +
       '<button class="btn invitacion-btn destacado-ver" type="button" data-popup-url="https://youtube.com/shorts/5xaJE-PWyLs" data-popup-title="Invitación · Día de Muertos">🎬 Invitación <span aria-hidden="true">✨</span></button>' +
-      '<div class="cuenta-regresiva" data-fecha-evento="2026-10-29T08:30:00" aria-live="off"><strong>Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado">🎉 ¡El evento ya se realizó!</p></div>' +
+      '<div class="cuenta-regresiva" data-fecha-evento="2026-10-29T08:30:00" aria-live="off"><strong>Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado"></p></div>' +
       '</div></div>';
     // Evitar que el aviso de Día de Muertos aparezca dos veces en la web.
     // El registro puede seguir en la hoja de cálculo; aquí se oculta el duplicado.
@@ -131,7 +131,7 @@ async function cargar(){
         ? '<button class="btn invitacion-btn destacado-ver" type="button" data-popup-url="' + esc(seguro(enlaceInvitacion)) + '" data-popup-title="Invitación · ' + esc(c.evento || 'Evento escolar') + '">🎬 Invitación <span aria-hidden="true">✨</span></button>'
         : '';
       const contador = fechaContador
-        ? '<div class="cuenta-regresiva" data-fecha-evento="' + esc(fechaContador) + '" aria-live="off"><strong>Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado">🎉 ¡El evento ya se realizó!</p></div>'
+        ? '<div class="cuenta-regresiva" data-fecha-evento="' + esc(fechaContador) + '" aria-live="off"><strong>Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado"></p></div>'
         : '';
       return '<div class="item evento"><div class="ico emo">' + esc(c.icono || '📚') + '</div><div class="evento-contenido"><h3>' + esc(c.evento) + '</h3>' +
         '<div class="meta">' + esc(c.fecha) + '</div>' + (c.descripcion ? '<p>' + esc(c.descripcion) + '</p>' : '') + botonInvitacion + contador + '</div></div>';
