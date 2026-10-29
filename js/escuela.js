@@ -291,8 +291,7 @@ OneSignalDeferred.push(async function(OneSignal){
   const campoEmojis=document.getElementById('despedidaEmojis');
   const frase=document.getElementById('pensamientoTexto');
   const autor=document.getElementById('pensamientoAutor');
-  const volver=document.getElementById('btnVolverWeb');
-  if(!boton||!pantalla||!campoEmojis||!frase||!autor||!volver)return;
+  if(!boton||!pantalla||!campoEmojis||!frase||!autor)return;
   const pensamientos=[
     {texto:'La educación es el arma más poderosa que puedes usar para cambiar el mundo.',autor:'Nelson Mandela'},
     {texto:'Se necesita un pueblo entero para educar a un niño.',autor:'Proverbio africano'},
@@ -332,13 +331,24 @@ OneSignalDeferred.push(async function(OneSignal){
     document.getElementById('despedidaTitulo').focus?.({preventScroll:true});
     history.pushState({despedidaEscuela:true},'','#despedida');
   });
-  volver.addEventListener('click',()=>{
-    pantalla.hidden=true;
-    document.body.style.overflow='';
-    campoEmojis.replaceChildren();
-    if(location.hash==='#despedida')history.replaceState(history.state,'',location.pathname+location.search);
-    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+  function salirDelSitio(){
+    // El navegador solo permite cerrar la pestaña si sus reglas lo autorizan.
+    window.close();
+    setTimeout(()=>{
+      // Si no pudo cerrarse, intenta regresar a la página anterior.
+      if(history.length>1){
+        history.back();
+      }else{
+        // Último recurso: abandonar la página del sitio.
+        location.replace('about:blank');
+      }
+    },180);
+  }
+  // La pantalla de despedida queda como cierre final; después intenta salir.
+  pantalla.addEventListener('click',ev=>{
+    if(ev.target.closest('#btnSalirWeb'))return;
   });
+  setTimeout(salirDelSitio,8500);
   window.addEventListener('popstate',()=>{
     if(!pantalla.hidden){pantalla.hidden=true;document.body.style.overflow='';campoEmojis.replaceChildren();}
   });
