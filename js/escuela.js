@@ -63,6 +63,42 @@ async function llamar(params){
   return r.json();
 }
 
+/* Fecha del evento: admite DD/MM/AAAA y fecha ISO; hora opcional en HH:MM */
+function fechaEventoISO(fecha, hora){
+  const s = String(fecha || '').trim();
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  let y, mo, d;
+  if(m){ y=+m[1]; mo=+m[2]; d=+m[3]; }
+  else {
+    m = s.match(/(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})/);
+    if(!m) return '';
+    d=+m[1]; mo=+m[2]; y=+m[3];
+  }
+  let hm = String(hora || s.match(/(?:^|\s)(\d{1,2}:\d{2})(?::\d{2})?/)?.[1] || '00:00').match(/(\d{1,2}):(\d{2})/);
+  const hh = hm ? Math.min(23,+hm[1]) : 0, mm = hm ? Math.min(59,+hm[2]) : 0;
+  const dt = new Date(y,mo-1,d,hh,mm,0);
+  if(dt.getFullYear()!==y || dt.getMonth()!==mo-1 || dt.getDate()!==d) return '';
+  return y+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0')+'T'+String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+':00';
+}
+function actualizarContadores(){
+  document.querySelectorAll('.cuenta-regresiva[data-fecha-evento]').forEach(el=>{
+    const fin = new Date(el.dataset.fechaEvento).getTime();
+    if(!Number.isFinite(fin)) return;
+    let restante = Math.max(0,fin-Date.now());
+    const terminado = restante === 0;
+    const unidades = {
+      dias: Math.floor(restante/86400000),
+      horas: Math.floor((restante%86400000)/3600000),
+      minutos: Math.floor((restante%3600000)/60000),
+      segundos: Math.floor((restante%60000)/1000)
+    };
+    Object.entries(unidades).forEach(([k,v])=>{const n=el.querySelector('[data-unidad="'+k+'"]');if(n)n.textContent=k==='dias'?String(v):String(v).padStart(2,'0');});
+    el.classList.toggle('finalizado',terminado);
+  });
+}
+setInterval(actualizarContadores,1000);
+actualizarContadores();
+
 /* Datos públicos */
 async function cargar(){
   try{
@@ -81,16 +117,25 @@ async function cargar(){
       '<div class="meta">29/10/2026 · 8:30 de la mañana</div>' +
       '<div class="sello-exito" aria-label="Este evento fue un éxito">¡ESTE EVENTO<br>FUE UN ÉXITO!</div>' +
       '<p>Madres y padres de familia: gracias por disfrutar la participación de sus hijos en las diferentes actividades con motivo del Día de Muertos. Conservamos esta invitación como evidencia de un evento que fue todo un éxito.</p>' +
-      '<button class="btn invitacion-btn" type="button" data-popup-url="https://youtube.com/shorts/5xaJE-PWyLs" data-popup-title="Invitación · Día de Muertos">🎬 Invitación <span aria-hidden="true">✨</span></button>' +
+      '<button class="btn invitacion-btn destacado-ver" type="button" data-popup-url="https://youtube.com/shorts/5xaJE-PWyLs" data-popup-title="Invitación · Día de Muertos">🎬 Invitación <span aria-hidden="true">✨</span></button>' +
+      '<div class="cuenta-regresiva" data-fecha-evento="2026-10-29T08:30:00" aria-live="off"><strong>⏳ Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado">🎉 ¡El evento ya se realizó! Conservamos aquí su invitación como evidencia.</p></div>' +
       '</div></div>';
     // Evitar que el aviso de Día de Muertos aparezca dos veces en la web.
     // El registro puede seguir en la hoja de cálculo; aquí se oculta el duplicado.
     const calendarioSinDuplicado = (d.calendario || []).filter(c =>
       !norm((c.evento || '') + ' ' + (c.descripcion || '')).includes('dia de muertos'));
-    const calendarioActual = calendarioSinDuplicado.length ? calendarioSinDuplicado.map(c =>
-      '<div class="item evento"><div class="ico emo">' + esc(c.icono || '📚') + '</div><div><h3>' + esc(c.evento) + '</h3>' +
-      '<div class="meta">' + esc(c.fecha) + '</div>' + (c.descripcion ? '<p>' + esc(c.descripcion) + '</p>' : '') + '</div></div>').join('')
-      : '<p class="vacio">No hay actividades próximas <span class="emo">🎒</span></p>';
+    const calendarioActual = calendarioSinDuplicado.length ? calendarioSinDuplicado.map(c => {
+      const enlaceInvitacion = c.invitacion || c.video || c.enlace || c.url || '';
+      const fechaContador = fechaEventoISO(c.fecha, c.hora || c.horario || '');
+      const botonInvitacion = enlaceInvitacion
+        ? '<button class="btn invitacion-btn destacado-ver" type="button" data-popup-url="' + esc(seguro(enlaceInvitacion)) + '" data-popup-title="Invitación · ' + esc(c.evento || 'Evento escolar') + '">🎬 Invitación <span aria-hidden="true">✨</span></button>'
+        : '';
+      const contador = fechaContador
+        ? '<div class="cuenta-regresiva" data-fecha-evento="' + esc(fechaContador) + '" aria-live="off"><strong>⏳ Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado">🎉 ¡El evento ya se realizó! Conservamos aquí su invitación como evidencia.</p></div>'
+        : '';
+      return '<div class="item evento"><div class="ico emo">' + esc(c.icono || '📚') + '</div><div class="evento-contenido"><h3>' + esc(c.evento) + '</h3>' +
+        '<div class="meta">' + esc(c.fecha) + '</div>' + (c.descripcion ? '<p>' + esc(c.descripcion) + '</p>' : '') + botonInvitacion + contador + '</div></div>';
+    }).join('') : '<p class="vacio">No hay actividades próximas <span class="emo">🎒</span></p>';
     $('#calLista').innerHTML = eventoMuertos + calendarioActual;
 
     const dest = d.destacados || [];
