@@ -711,3 +711,43 @@ input:focus,select:focus,textarea:focus{
 .despedida-volver{width:min(100%,300px);margin:auto!important;border:1px solid #ffe08a!important;color:#14264f!important;background:linear-gradient(120deg,#fff0b5,#e9bd45)!important;box-shadow:0 7px 0 #9e7920,0 12px 26px rgba(0,0,0,.2)!important}
 @media(max-width:480px){.despedida-contenido{border-radius:22px}.despedida-mensaje{line-height:1.7}.pensamiento-educativo{padding:1rem}}
 @media(prefers-reduced-motion:reduce){.salir-web .luz-recorrido,.despedida-contenido,.despedida-emoji{animation:none!important}.despedida-emoji{opacity:.2}}
+
+
+/* Pizarrón de bienvenida de Segundo A */
+.pizarron .bienvenida-pizarron{
+  min-height:220px;display:grid;align-content:center;text-align:center;
+  padding:20px 10px 24px;border:0;margin:0;
+  background:radial-gradient(ellipse at center,rgba(255,255,255,.045),transparent 70%);
+}
+.pizarron .bienvenida-pizarron h3{
+  color:#fff2a6;font-family:"Schoolbell","Comic Sans MS",cursive;
+  font-size:clamp(1.65rem,5vw,2.35rem);line-height:1.2;
+  text-decoration:none;text-shadow:2px 2px 0 #173b20,0 0 10px rgba(255,242,166,.28);
+}
+.pizarron .bienvenida-pizarron .bienvenida-texto{
+  margin:16px 0 0;color:#fff;font-family:"Schoolbell","Comic Sans MS",cursive;
+  font-size:clamp(1.3rem,4.5vw,1.9rem);line-height:1.55;
+  text-shadow:1px 2px 2px rgba(0,0,0,.6);
+}
+.pizarron .bienvenida-pizarron .bienvenida-texto strong{color:#fff2a6}
+.evento-cerrado{position:relative;overflow:hidden;padding:18px 16px;border-left-color:#b42323!important;background:linear-gradient(130deg,#fff,#fff7f7)!important}
+.evento-cerrado .evento-contenido{position:relative;min-width:0;padding-right:6px}
+.evento-cerrado h3{padding-right:4px}
+.evento-cerrado .sello-exito{
+  position:relative;width:max-content;max-width:100%;margin:20px auto 8px;
+  padding:9px 15px;border:5px solid #c81924;border-radius:4px;
+  color:#c81924;background:rgba(255,255,255,.72);
+  font-family:Impact,"Arial Black",sans-serif;font-size:clamp(1.25rem,4.8vw,2rem);
+  font-weight:1000;letter-spacing:.055em;line-height:1.05;text-align:center;
+  transform:rotate(-8deg);text-transform:uppercase;
+  text-shadow:1px 1px 0 rgba(200,25,36,.12);
+  box-shadow:0 0 0 2px rgba(200,25,36,.08),inset 0 0 0 1px rgba(200,25,36,.16);
+}
+.evento-cerrado .sello-exito::before{
+  content:"";position:absolute;inset:3px;border:1px solid #c81924;pointer-events:none;
+}
+@media(max-width:480px){
+  .pizarron .bienvenida-pizarron{min-height:200px;padding-inline:4px}
+  .evento-cerrado{padding:15px 12px}
+  .evento-cerrado .sello-exito{margin-top:18px;letter-spacing:.025em}
+}
