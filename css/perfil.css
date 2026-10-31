@@ -1,0 +1,25 @@
+/* Perfil familiar: cámara y avatar local, sin subir imágenes a servidores */
+#perfilFamiliaFab{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:9000;display:flex;align-items:center;gap:9px;max-width:calc(100vw - 28px);padding:7px 14px 7px 7px;border:1px solid rgba(212,175,55,.8);border-radius:999px;background:linear-gradient(135deg,#0b1b3d,#234779);color:#fff;box-shadow:0 8px 24px rgba(5,20,48,.28);font:800 13px/1.2 system-ui,sans-serif;cursor:pointer}
+#perfilFamiliaFab:focus-visible,#perfilFamiliaDlg button:focus-visible{outline:3px solid #e8c85b;outline-offset:3px}
+#perfilFamiliaFab .pf-mini{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;overflow:hidden;border-radius:50%;border:2px solid #e8c85b;background:#fff;color:#17396e;font-size:21px}
+#perfilFamiliaFab .pf-mini img{width:100%;height:100%;object-fit:cover}
+#perfilFamiliaDlg{width:min(92vw,440px);max-height:min(88dvh,760px);overflow:auto;padding:0;border:1px solid #d4af37;border-radius:24px;background:#f7f9fd;color:#17243b;box-shadow:0 25px 90px #06132980}
+#perfilFamiliaDlg::backdrop{background:rgba(4,13,31,.72);backdrop-filter:blur(4px)}
+#perfilFamiliaDlg .pf-head{padding:20px 22px;color:#fff;background:linear-gradient(135deg,#07152f,#234779);border-bottom:4px solid #d4af37}
+#perfilFamiliaDlg .pf-head h2{margin:0;font-size:1.35rem}
+#perfilFamiliaDlg .pf-head p{margin:6px 0 0;color:#e8edf7;font-size:.9rem}
+#perfilFamiliaDlg .pf-body{padding:20px}
+#perfilFamiliaDlg .pf-preview{width:clamp(120px,36vw,170px);height:clamp(120px,36vw,170px);margin:0 auto 16px;display:grid;place-items:center;overflow:hidden;border-radius:50%;border:4px solid #d4af37;background:linear-gradient(145deg,#e7eef9,#fff);color:#234779;font-size:4rem;box-shadow:0 8px 24px #0b1b3d1c}
+#perfilFamiliaDlg .pf-preview img{width:100%;height:100%;object-fit:cover}
+#perfilFamiliaDlg .pf-camera{display:none;width:100%;max-height:45dvh;object-fit:contain;background:#0b1b3d;border-radius:14px;margin:0 0 14px}
+#perfilFamiliaDlg .pf-camera.activa{display:block}
+#perfilFamiliaDlg .pf-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#perfilFamiliaDlg .pf-actions button,#perfilFamiliaDlg .pf-close{min-height:44px;padding:11px 12px;border:0;border-radius:12px;font:800 14px/1.25 system-ui,sans-serif;cursor:pointer}
+#perfilFamiliaDlg .pf-primary{background:linear-gradient(135deg,#0b1b3d,#31598f);color:#fff}
+#perfilFamiliaDlg .pf-secondary{background:#e7edf7;color:#132b53}
+#perfilFamiliaDlg .pf-danger{background:#fff0f0;color:#9c202b}
+#perfilFamiliaDlg .pf-note{margin:14px 0;color:#596981;font-size:.82rem;line-height:1.5}
+#perfilFamiliaDlg .pf-close{width:100%;margin-top:12px;background:#d4af37;color:#101f3d}
+#perfilFamiliaDlg .pf-status{min-height:1.2em;margin:10px 0 0;color:#1c6845;font-size:.85rem}
+@media(max-width:380px){#perfilFamiliaFab{right:10px;bottom:12px;padding-right:10px;font-size:12px}#perfilFamiliaFab .pf-mini{width:38px;height:38px;flex-basis:38px}#perfilFamiliaDlg .pf-actions{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){#perfilFamiliaFab{scroll-behavior:auto}}
