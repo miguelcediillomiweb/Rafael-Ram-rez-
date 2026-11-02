@@ -1,4 +1,4 @@
-/* Autorización familiar y recuerdo fotográfico. La imagen se procesa en el dispositivo. */
+/* Vista de cámara y recuerdo fotográfico. La imagen se procesa en el dispositivo; modo de prueba sin bloqueo de registro familiar. */
 (() => {
   'use strict';
   const API='https://script.google.com/macros/s/AKfycbyizN5oq0LMc4uCabXVayS_6JsNM1HuWgWIZzwh_mlpHCu0oidYimuj1K4-eHc4Fcmz/exec';
@@ -47,26 +47,38 @@
     dlg.addEventListener('cancel',e=>{e.preventDefault();});
     dlg.addEventListener('close',stop);
   }
-  async function decidir(valor){
-    const b=$('#rrAceptar'); b.disabled=true; $('#rrEstado').textContent='Guardando autorización…';
+  function tono(frecuencia=880,duracion=.12,volumen=.045){
     try{
-      const result=await api({action:'autorizacion',operacion:'guardar',id:alumno.id,decision:valor});
-      if(!result.ok) throw Error(result.error||'No se pudo guardar la decisión.');
-      if(valor==='no'){finalizar(null);return;}
-      $('#rrConsentimiento').hidden=true; $('#rrCamara').hidden=false;
-      try{
-        stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});
-        $('#rrVideo').srcObject=stream;
-        $('#rrEstado').textContent='Cuando estés listo, toca el botón para iniciar la cuenta regresiva.';
-      }catch(_){$('#rrEstado').textContent='No se pudo abrir la cámara. Puedes continuar sin fotografía.';}
-    }catch(e){$('#rrEstado').textContent=e.message||'No se pudo guardar. Inténtalo de nuevo.';b.disabled=false;}
+      const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
+      const ctx=new Ctx(),osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.type='sine';osc.frequency.value=frecuencia;gain.gain.value=volumen;
+      osc.connect(gain);gain.connect(ctx.destination);osc.start();
+      gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+duracion);
+      osc.stop(ctx.currentTime+duracion);osc.onended=()=>ctx.close();
+    }catch(_){}
+  }
+  async function decidir(valor){
+    const b=$('#rrAceptar'); b.disabled=true;
+    if(valor==='no'){finalizar(null);return;}
+    $('#rrConsentimiento').hidden=true; $('#rrCamara').hidden=false;
+    $('#rrEstado').textContent='Solicitando acceso a la cámara…';
+    try{
+      if(!navigator.mediaDevices?.getUserMedia) throw Error('Este navegador no permite abrir la cámara desde esta página.');
+      stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});
+      $('#rrVideo').srcObject=stream;
+      await $('#rrVideo').play();
+      $('#rrEstado').textContent='¡Ya estás frente a la cámara! Cuando estés listo, toca Tomar fotografía.';
+    }catch(e){
+      $('#rrEstado').textContent='No se pudo abrir la cámara. Revisa el permiso del navegador y vuelve a intentarlo. '+(e.message||'');
+      b.disabled=false;
+    }
   }
   async function capturar(){
     const v=$('#rrVideo'); if(!stream||!v.videoWidth){$('#rrEstado').textContent='La cámara no está disponible. Puedes continuar sin fotografía.';return;}
     const btn=$('#rrTomar');btn.disabled=true;
     const cuenta=$('#rrCuenta');cuenta.hidden=false;
-    for(let n=3;n>0;n--){cuenta.textContent=n;cuenta.classList.remove('pulso');void cuenta.offsetWidth;cuenta.classList.add('pulso');await new Promise(r=>setTimeout(r,850));}
-    cuenta.hidden=true;$('#rrFlash').classList.add('disparo');
+    for(let n=3;n>0;n--){cuenta.textContent=n;cuenta.classList.remove('pulso');void cuenta.offsetWidth;cuenta.classList.add('pulso');tono(560+n*120,.13);await new Promise(r=>setTimeout(r,850));}
+    cuenta.hidden=true;tono(1150,.22,.07);$('#rrFlash').classList.remove('disparo');void $('#rrFlash').offsetWidth;$('#rrFlash').classList.add('disparo');
     try{const c=$('#rrCanvas'),scale=Math.min(1,900/Math.max(v.videoWidth,v.videoHeight));c.width=Math.round(v.videoWidth*scale);c.height=Math.round(v.videoHeight*scale);
       const ctx=c.getContext('2d');ctx.filter='saturate(1.12) contrast(1.04) brightness(1.03)';ctx.drawImage(v,0,0,c.width,c.height);
       const data=c.toDataURL('image/jpeg',.86);localStorage.setItem(KEY+alumno.id,data);finalizar(data);
@@ -85,13 +97,9 @@
       $('#rrTexto').textContent='¿Autorizas que tomemos una fotografía de tu hijo(a) para mostrarla en este espacio escolar?';
       $('#rrConsentimiento').hidden=false;$('#rrCamara').hidden=true;$('#rrFinal').hidden=true;$('#rrAceptar').disabled=false;
       $('#rrEstado').textContent='';$('#rrVideo').srcObject=null;
-      try{
-        const d=await api({action:'autorizacion',operacion:'consultar',id:alumno.id});
-        if(!d.ok) throw Error(d.error||'No se pudo verificar la autorización.');
-        if(d.decision==='si'){continuar();return;}
-        if(d.decision==='no'&&d.vigente){continuar();return;}
-        dlg.showModal();
-      }catch(e){const msg=$('#msgAcceso');msg.className='msg err';msg.textContent='No se pudo verificar la autorización familiar. '+e.message;}
+      // Modo de prueba visual: no consulta ni bloquea por el registro familiar.
+      // La fotografía solo se toma después de pulsar expresamente "Sí, autorizo".
+      dlg.showModal();
     }
   };
 })();
