@@ -189,7 +189,14 @@ $('#formAcceso').addEventListener('submit', async ev => {
     $('#galeria').innerHTML = d.galeria.map(g =>
       '<a class="carpeta" target="_blank" rel="noopener" data-folder="' + esc(folderId(g.enlace)) + '" data-titulo="' + esc(g.titulo) + '" href="' + esc(seguro(g.enlace)) + '"><span class="ico emo">📸</span>' + esc(g.titulo) +
       (g.descripcion ? '<small>' + esc(g.descripcion) + '</small>' : '') + '</a>').join('');
-    $('#formAcceso').hidden = true; $('#privado').hidden = false; $('#contacto').hidden = true;
+    const mostrarAula = () => {
+      $('#formAcceso').hidden = true; $('#privado').hidden = false; $('#contacto').hidden = true;
+    };
+    if (window.RRAutorizacion) {
+      await window.RRAutorizacion.iniciar($('#alumno').value, d.nombre, mostrarAula);
+    } else {
+      mostrarAula();
+    }
   }catch(e){
     msg.className = 'msg err'; msg.textContent = 'Error de conexión. Inténtalo de nuevo.';
   }finally{ btn.disabled = false; }
