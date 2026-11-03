@@ -9,9 +9,20 @@
   let stream = null, dlg = null, ctx = {}, corriendo = false, hecho = false;
 
   async function api(params) {
-    const r = await fetch(API + '?' + new URLSearchParams(params), { cache: 'no-store' });
-    if (!r.ok) throw Error('red');
-    return r.json();
+    const ac = new AbortController(), t = setTimeout(() => ac.abort(), 15000);
+    try {
+      const r = await fetch(API + '?' + new URLSearchParams(params), { cache: 'no-store', signal: ac.signal });
+      if (!r.ok) throw Error('red');
+      return await r.json();
+    } finally { clearTimeout(t); }
+  }
+  /* Guarda la decisión en el Sheets sin hacer esperar al papá (3 intentos) */
+  async function guardarDecision(id, fecha, decision) {
+    for (let i = 0; i < 3; i++) {
+      try { const r = await api({ action: 'aut_guardar', id, fecha, decision }); if (r && r.ok) return true; } catch (_) {}
+      await new Promise(r => setTimeout(r, 1500));
+    }
+    return false;
   }
   const stop = () => { if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; } };
 
@@ -93,7 +104,7 @@
         <div id="rrCamara" hidden>
           <div class="rr-camara-marco">
             <video id="rrVideo" autoplay muted playsinline></video>
-            <div id="rrCuenta" class="rr-cuenta" hidden>3</div>
+            <div id="rrCuenta" class="rr-cuenta" style="display:none">3</div>
             <div id="rrFlash" class="rr-flash"></div>
           </div>
           <p id="rrEstado" class="rr-estado"></p>
@@ -129,11 +140,11 @@
     $('#rrFinalTxt').textContent = texto;
   }
 
-  async function rechazar() {
+  function rechazar() {
     $('#rrRechazar').disabled = true;
-    try { await api({ action: 'aut_guardar', id: ctx.id, fecha: ctx.fecha, decision: 'no' }); } catch (_) {}
-    pantallaFinal(null, 'Gracias. Usaremos una imagen genérica. Te lo volveremos a preguntar en un mes por si cambias de opinión.');
     ctx.foto = false;
+    guardarDecision(ctx.id, ctx.fecha, 'no');
+    pantallaFinal(null, 'Gracias. Usaremos una imagen genérica. Te lo volveremos a preguntar en un mes por si cambias de opinión.');
   }
 
   async function abrirCamara() {
@@ -171,21 +182,25 @@
     const v = $('#rrVideo');
     if (!stream || !v.videoWidth) { $('#rrEstado').textContent = 'La cámara aún no está lista.'; return; }
     $('#rrTomar').disabled = true;
-    const cuenta = $('#rrCuenta'); cuenta.hidden = false;
-    for (let n = 3; n > 0; n--) {
-      cuenta.textContent = n; cuenta.classList.remove('pulso'); void cuenta.offsetWidth; cuenta.classList.add('pulso');
-      await new Promise(r => setTimeout(r, 800));
+    const cuenta = $('#rrCuenta'); cuenta.style.display = 'grid';
+    try {
+      for (let n = 3; n > 0; n--) {
+        cuenta.textContent = n; cuenta.classList.remove('pulso'); void cuenta.offsetWidth; cuenta.classList.add('pulso');
+        await new Promise(r => setTimeout(r, 800));
+      }
+      cuenta.style.display = 'none';
+      const fl = $('#rrFlash'); fl.classList.remove('disparo'); void fl.offsetWidth; fl.classList.add('disparo');
+      obturador();
+      const data = caricatura(v);
+      guardarFoto(ctx.id, data);
+      ctx.foto = true;
+      guardarDecision(ctx.id, ctx.fecha, 'si');
+      setTimeout(() => pantallaFinal(data, '¡Listo! Esta será la imagen de ' + ctx.nombre + '.'), 600);
+    } catch (e) {
+      cuenta.style.display = 'none';
+      $('#rrEstado').textContent = 'No se pudo tomar la foto (' + ((e && e.message) || 'error') + '). Inténtalo de nuevo.';
+      $('#rrTomar').disabled = false;
     }
-    cuenta.hidden = true;
-    const fl = $('#rrFlash'); fl.classList.remove('disparo'); void fl.offsetWidth; fl.classList.add('disparo');
-    obturador();
-    let data = null;
-    try { data = caricatura(v); } catch (_) {}
-    if (!data) { $('#rrEstado').textContent = 'No se pudo preparar la foto. Inténtalo de nuevo.'; $('#rrTomar').disabled = false; return; }
-    guardarFoto(ctx.id, data);
-    try { await api({ action: 'aut_guardar', id: ctx.id, fecha: ctx.fecha, decision: 'si' }); } catch (_) {}
-    ctx.foto = true;
-    setTimeout(() => pantallaFinal(data, '¡Listo! Esta será la imagen de ' + ctx.nombre + '.'), 600);
   }
 
   function cerrar() {
@@ -204,6 +219,11 @@
     corriendo = true;
     let est = null;
     try { est = await api({ action: 'aut_consultar', id, fecha }); } catch (_) {}
+    if (est && est.ok && est.preguntar && est.estado === 'nunca' && leerFoto(id)) {
+      guardarDecision(id, fecha, 'si');
+      mostrarPerfil(id, nombre, true);
+      fin(continuar); return;
+    }
     if (!est || !est.ok || !est.preguntar) {
       mostrarPerfil(id, nombre, est && est.estado === 'si');
       fin(continuar); return;
