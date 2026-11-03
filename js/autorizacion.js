@@ -99,6 +99,7 @@
           <p id="rrEstado" class="rr-estado"></p>
           <div class="rr-actions">
             <button type="button" class="rr-si" id="rrTomar">📸 Tomar foto</button>
+            <button type="button" class="rr-si" id="rrReintentar" hidden>🔄 Reintentar</button>
             <button type="button" class="rr-no" id="rrOmitir">Cancelar</button>
           </div>
         </div>
@@ -112,6 +113,7 @@
     $('#rrAceptar').onclick = abrirCamara;
     $('#rrRechazar').onclick = rechazar;
     $('#rrTomar').onclick = capturar;
+    $('#rrReintentar').onclick = () => { $('#rrReintentar').hidden = true; abrirCamara(); };
     $('#rrOmitir').onclick = () => { stop(); $('#rrCamara').hidden = true; $('#rrConsentimiento').hidden = false; $('#rrAceptar').disabled = false; };
     $('#rrContinuar').onclick = cerrar;
     dlg.addEventListener('cancel', e => e.preventDefault());
@@ -137,15 +139,31 @@
   async function abrirCamara() {
     $('#rrAceptar').disabled = true;
     $('#rrConsentimiento').hidden = true; $('#rrCamara').hidden = false;
+    $('#rrReintentar').hidden = true; $('#rrTomar').disabled = true;
     $('#rrEstado').textContent = 'Abriendo la cámara…';
     try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw Error('Este navegador no permite abrir la cámara.');
-      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+      if (!window.isSecureContext) throw { name: 'SecurityError' };
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw { name: 'SinSoporte' };
+      const gum = o => navigator.mediaDevices.getUserMedia(o);
+      try { stream = await gum({ video: { facingMode: 'user' }, audio: false }); }
+      catch (e1) {
+        if (e1 && (e1.name === 'OverconstrainedError' || e1.name === 'NotFoundError')) stream = await gum({ video: true, audio: false });
+        else throw e1;
+      }
       const v = $('#rrVideo'); v.srcObject = stream; await v.play();
       $('#rrEstado').textContent = 'Cuando estén listos, toquen Tomar foto 😊';
       $('#rrTomar').disabled = false;
     } catch (e) {
-      $('#rrEstado').textContent = 'No se pudo abrir la cámara. Revisa el permiso del navegador e inténtalo de nuevo.';
+      stop();
+      const n = (e && e.name) || 'desconocido';
+      let msg;
+      if (n === 'NotAllowedError' || n === 'SecurityError') msg = 'La cámara está bloqueada para esta página. Toca el candado 🔒 junto a la dirección → Permisos → Cámara → Permitir, y luego toca Reintentar.';
+      else if (n === 'NotFoundError' || n === 'OverconstrainedError') msg = 'No se encontró una cámara en este dispositivo.';
+      else if (n === 'NotReadableError' || n === 'AbortError') msg = 'La cámara la está usando otra app. Ciérrala y toca Reintentar.';
+      else if (n === 'SinSoporte') msg = 'Este navegador no permite abrir la cámara. Abre la página en Chrome.';
+      else msg = 'No se pudo abrir la cámara.';
+      $('#rrEstado').textContent = msg + ' (Código: ' + n + ')';
+      $('#rrReintentar').hidden = false;
     }
   }
 
