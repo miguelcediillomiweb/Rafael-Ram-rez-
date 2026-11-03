@@ -40,31 +40,145 @@
     } catch (_) {}
   }
 
-  /* Convierte la foto en caricatura (colores planos + contornos). La original no se guarda. */
+  /* Zumbido corto de la camarita imprimiendo la foto */
+  function zumbido() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+      const a = new AC(), t0 = a.currentTime, o = a.createOscillator(), f = a.createBiquadFilter(), g = a.createGain();
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(70, t0); o.frequency.linearRampToValueAtTime(125, t0 + .25); o.frequency.linearRampToValueAtTime(95, t0 + 2.2);
+      f.type = 'lowpass'; f.frequency.value = 520;
+      g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.16, t0 + .15); g.gain.setValueAtTime(.16, t0 + 2); g.gain.linearRampToValueAtTime(0, t0 + 2.6);
+      o.connect(f); f.connect(g); g.connect(a.destination); o.start(); o.stop(t0 + 2.7);
+      setTimeout(() => a.close(), 3000);
+    } catch (_) {}
+  }
+
+  /* Estilos de la camarita instantánea (se agregan solos) */
+  function estilosEscena() {
+    if ($('#rrEstilosEscena')) return;
+    const st = document.createElement('style'); st.id = 'rrEstilosEscena';
+    st.textContent = \`
+      .rr-escena-wrap{position:relative;width:300px;height:380px;margin:0 auto}
+      @media (max-width:380px){.rr-escena-wrap{zoom:.9}}
+      .rr-escena{position:absolute;inset:0;overflow:hidden;border-radius:16px}
+      .rr-cam{position:absolute;left:0;bottom:0;width:300px;height:230px;z-index:2;transform:translateY(125%)}
+      .rr-cam.sube{transform:translateY(0);transition:transform 1s cubic-bezier(.2,1.25,.35,1)}
+      .rr-card{position:absolute;z-index:1;left:75px;top:14px;width:150px;padding:32px 8px 12px;background:#fff;border:1px solid #e4dccb;box-shadow:0 6px 16px rgba(0,0,0,.25);transform:translateY(205px);visibility:hidden}
+      .rr-card.sale{visibility:visible;transform:translateY(0);transition:transform 2.6s cubic-bezier(.35,.05,.25,1)}
+      .rr-card img{display:block;width:100%;height:142px;object-fit:cover;background:#f1efe8;filter:brightness(2.8) saturate(.2) blur(9px);opacity:.15}
+      .rr-card img.revela{filter:none;opacity:1;transition:filter 4.5s ease-in-out,opacity 4.5s ease-in}
+      .rr-card-nombre{position:absolute;left:0;right:0;top:7px;min-height:20px;text-align:center;font:700 16px 'Segoe Print','Bradley Hand','Comic Sans MS',cursive;color:#27406e}
+      .rr-escena-flash{position:absolute;inset:0;z-index:5;background:#fff;opacity:0;pointer-events:none}
+      .rr-escena-flash.disparo{animation:rrflash .7s ease-out}
+      #rrcGlow,#rrcLG{opacity:0;transform-origin:center;transform-box:fill-box}
+      .rr-cam.destello #rrcGlow,.rr-cam.destello #rrcLG{animation:rrdest .8s ease-out}
+      .rr-escena.trabaja{animation:rrvibra .12s linear infinite}
+      .rr-fin{opacity:0;pointer-events:none;transition:opacity .6s}
+      .rr-fin.ya{opacity:1;pointer-events:auto}
+      @keyframes rrdest{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.2)}100%{opacity:0;transform:scale(1.5)}}
+      @keyframes rrvibra{0%{transform:translate(0,0)}25%{transform:translate(1px,0)}50%{transform:translate(0,1px)}75%{transform:translate(-1px,0)}100%{transform:translate(0,0)}}\`;
+    document.head.append(st);
+  }
+
+  const SVG_CAMARA = \`
+    <svg class="rr-cam" id="rrCam" viewBox="0 0 300 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="rrcBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9d3f6"/><stop offset="1" stop-color="#6a98de"/></linearGradient>
+        <radialGradient id="rrcLens" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#4d74b8"/><stop offset=".55" stop-color="#14284f"/><stop offset="1" stop-color="#091226"/></radialGradient>
+        <radialGradient id="rrcGl"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+        <clipPath id="rrcClip"><rect x="22" y="40" width="256" height="180" rx="36"/></clipPath>
+      </defs>
+      <ellipse cx="150" cy="224" rx="125" ry="7" fill="rgba(0,0,0,.18)"/>
+      <path d="M36 80 C6 98 2 152 18 198 C24 212 40 210 38 196 C30 162 32 120 54 94 Z" fill="#7fa6df" stroke="#5c84c2" stroke-width="2"/>
+      <path d="M31 94 C16 122 16 162 26 194" fill="none" stroke="#a9c6ee" stroke-width="2" stroke-dasharray="4 4"/>
+      <rect x="12" y="128" width="26" height="34" rx="6" fill="#e9d4ae" stroke="#bfa273" stroke-width="2" transform="rotate(-8 25 145)"/>
+      <circle cx="25" cy="137" r="3" fill="#bfa273"/>
+      <rect x="22" y="40" width="256" height="180" rx="36" fill="url(#rrcBody)" stroke="#5d88cc" stroke-width="3"/>
+      <rect x="30" y="47" width="240" height="24" rx="12" fill="#fff" opacity=".3"/>
+      <rect x="22" y="192" width="256" height="30" fill="rgba(20,50,110,.16)" clip-path="url(#rrcClip)"/>
+      <rect x="76" y="34" width="148" height="12" rx="6" fill="#36588f"/>
+      <rect x="80" y="40" width="140" height="4" rx="2" fill="#1f3a66"/>
+      <rect x="46" y="62" width="42" height="30" rx="8" fill="#f7f2e8" stroke="#cdbb97" stroke-width="2"/>
+      <rect x="52" y="67" width="14" height="8" rx="3" fill="#fff"/>
+      <rect x="100" y="64" width="26" height="26" rx="7" fill="#33496f"/>
+      <rect x="104" y="68" width="10" height="7" rx="3" fill="#8fb1e8" opacity=".8"/>
+      <path d="M250 92 C232 80 232 63 243 61 C247 60 250 64 250 67 C250 64 253 60 257 61 C268 63 268 80 250 92 Z" fill="#3d6fc4"/>
+      <circle cx="172" cy="142" r="66" fill="#dbe8f9" stroke="#5d88cc" stroke-width="3"/>
+      <circle cx="172" cy="142" r="58" fill="#f3e8d3" stroke="#cfbb95" stroke-width="2"/>
+      <circle cx="172" cy="142" r="48" fill="#e5d6b8"/>
+      <circle cx="172" cy="142" r="40" fill="#1c2f58"/>
+      <circle cx="172" cy="142" r="33" fill="url(#rrcLens)"/>
+      <ellipse cx="160" cy="130" rx="11" ry="7" fill="#fff" opacity=".75" transform="rotate(-30 160 130)"/>
+      <circle cx="187" cy="157" r="4" fill="#fff" opacity=".35"/>
+      <circle id="rrcGlow" cx="67" cy="77" r="50" fill="url(#rrcGl)"/>
+      <circle id="rrcLG" cx="172" cy="142" r="44" fill="url(#rrcGl)"/>
+    </svg>\`;
+
+  /* Escena: sube la camarita, dispara el flash, imprime y la foto se va revelando */
+  function escenaCamara(data, texto) {
+    stop();
+    estilosEscena();
+    $('#rrConsentimiento').hidden = true; $('#rrCamara').hidden = true; $('#rrFinal').hidden = false;
+    $('#rrPolaroid').hidden = true;
+    const wrap = $('#rrEscenaWrap'); wrap.hidden = false;
+    wrap.innerHTML = '<div class="rr-escena" id="rrEscena"><div class="rr-card" id="rrCard"><img id="rrCardImg" alt="Foto"><div class="rr-card-nombre" id="rrCardNombre"></div></div>' +
+      SVG_CAMARA + '<div class="rr-escena-flash" id="rrEscFlash"></div></div>';
+    const esc = $('#rrEscena'), cam = $('#rrCam'), card = $('#rrCard'), img = $('#rrCardImg'), nom = $('#rrCardNombre'), fl = $('#rrEscFlash'), fin = $('#rrFin');
+    img.src = data; $('#rrFinalTxt').textContent = texto; fin.classList.remove('ya');
+    const normal = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const T = (ms, fn) => setTimeout(fn, normal ? ms : 30);
+    const escribir = () => {
+      const nombre = ctx.nombre || ''; let i = 0;
+      if (!nombre) { fin.classList.add('ya'); return; }
+      const iv = setInterval(() => { nom.textContent = nombre.slice(0, ++i); if (i >= nombre.length) { clearInterval(iv); fin.classList.add('ya'); } }, 110);
+    };
+    T(80, () => cam.classList.add('sube'));
+    T(1400, () => { cam.classList.add('destello'); fl.classList.add('disparo'); obturador(); });
+    T(2100, () => { esc.classList.add('trabaja'); zumbido(); });
+    T(2400, () => card.classList.add('sale'));
+    T(5000, () => { esc.classList.remove('trabaja'); img.classList.add('revela'); });
+    T(5700, escribir);
+    T(11000, () => fin.classList.add('ya'));
+  }
+
+  /* Convierte la foto en pop art: pocos colores planos, puntos de semitono y
+     rasgos suavizados (no se distingue bien la cara). La foto original no se guarda. */
   function caricatura(v) {
-    const W = 360, H = Math.round(W * v.videoHeight / v.videoWidth);
+    const W = 320, H = Math.round(W * v.videoHeight / v.videoWidth);
+    const sw = 60, sh = Math.max(2, Math.round(sw * H / W));
+    const s = document.createElement('canvas'); s.width = sw; s.height = sh;
+    const sx = s.getContext('2d');
+    sx.save(); sx.translate(sw, 0); sx.scale(-1, 1); sx.drawImage(v, 0, 0, sw, sh); sx.restore();
     const c = document.createElement('canvas'); c.width = W; c.height = H;
     const x = c.getContext('2d', { willReadFrequently: true });
-    x.save(); x.translate(W, 0); x.scale(-1, 1);
-    x.filter = 'saturate(1.5) contrast(1.15) blur(1.2px)';
-    x.drawImage(v, 0, 0, W, H); x.restore(); x.filter = 'none';
-    const im = x.getImageData(0, 0, W, H), d = im.data, lum = new Float32Array(W * H);
-    for (let i = 0, p = 0; i < d.length; i += 4, p++) lum[p] = .299 * d[i] + .587 * d[i + 1] + .114 * d[i + 2];
-    const out = x.createImageData(W, H), o = out.data, paso = 255 / 4;
+    x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
+    x.filter = 'blur(2px)'; x.drawImage(s, 0, 0, W, H); x.filter = 'none';
+    const d = x.getImageData(0, 0, W, H).data, n = W * H, lum = new Float32Array(n);
+    for (let i = 0, p = 0; p < n; i += 4, p++) lum[p] = .299 * d[i] + .587 * d[i + 1] + .114 * d[i + 2];
+    /* ajusta contraste (5% más oscuro y 5% más claro) */
+    const orden = Float32Array.from(lum).sort(), lo = orden[Math.floor(n * .05)], hi = orden[Math.floor(n * .95)], rango = Math.max(30, hi - lo);
+    const PAL = [[18, 22, 74], [226, 40, 96], [255, 190, 0], [255, 243, 214]];
+    const out = x.createImageData(W, H), o = out.data, cel = 7, k = Math.SQRT1_2;
     for (let y = 0; y < H; y++) for (let xx = 0; xx < W; xx++) {
       const p = y * W + xx, i = p * 4;
-      let borde = 0;
+      const t = Math.min(.999, Math.max(0, (lum[p] - lo) / rango)) * 3;
+      let nivel = Math.floor(t); const frac = t - nivel;
+      /* puntos de semitono a 45° */
+      const u = (xx + y) * k, w = (xx - y) * k;
+      const du = (u % cel) - cel / 2, dw = (w % cel) - cel / 2;
+      const dist = Math.sqrt(du * du + dw * dw) / (cel * .7071);
+      if (frac > dist) nivel += 1;
+      let col = PAL[nivel];
       if (xx > 0 && y > 0 && xx < W - 1 && y < H - 1) {
         const gx = -lum[p - W - 1] - 2 * lum[p - 1] - lum[p + W - 1] + lum[p - W + 1] + 2 * lum[p + 1] + lum[p + W + 1];
         const gy = -lum[p - W - 1] - 2 * lum[p - W] - lum[p - W + 1] + lum[p + W - 1] + 2 * lum[p + W] + lum[p + W + 1];
-        borde = Math.sqrt(gx * gx + gy * gy);
+        if (Math.sqrt(gx * gx + gy * gy) > 70) col = PAL[0];
       }
-      const k = borde > 110 ? .25 : 1;
-      for (let j = 0; j < 3; j++) o[i + j] = Math.min(255, Math.round(d[i + j] / paso) * paso) * k;
-      o[i + 3] = 255;
+      o[i] = col[0]; o[i + 1] = col[1]; o[i + 2] = col[2]; o[i + 3] = 255;
     }
     x.putImageData(out, 0, 0);
-    return c.toDataURL('image/jpeg', .85);
+    return c.toDataURL('image/jpeg', .9);
   }
 
   function guardarFoto(id, data) { try { localStorage.setItem(KEY + id, data); } catch (_) {} }
@@ -88,7 +202,7 @@
   function crear() {
     if (dlg) return;
     dlg = document.createElement('dialog'); dlg.id = 'rrAutorizacion';
-    dlg.innerHTML = `
+    dlg.innerHTML = \`
       <section class="rr-panel">
         <div class="rr-insignia">📸</div>
         <p class="rr-kicker">ESCUELA PRIMARIA RAFAEL RAMÍREZ</p>
@@ -115,11 +229,14 @@
           </div>
         </div>
         <div id="rrFinal" hidden>
-          <div class="rr-polaroid" id="rrPolaroid">🧒</div>
-          <p class="rr-estado" id="rrFinalTxt"></p>
-          <button type="button" class="rr-si" id="rrContinuar">Entrar</button>
+          <div class="rr-escena-wrap" id="rrEscenaWrap" hidden></div>
+          <div class="rr-polaroid" id="rrPolaroid" hidden>🧒</div>
+          <div class="rr-fin" id="rrFin">
+            <p class="rr-estado" id="rrFinalTxt"></p>
+            <button type="button" class="rr-si" id="rrContinuar">Entrar</button>
+          </div>
         </div>
-      </section>`;
+      </section>\`;
     document.body.append(dlg);
     $('#rrAceptar').onclick = abrirCamara;
     $('#rrRechazar').onclick = rechazar;
@@ -134,10 +251,10 @@
   function pantallaFinal(data, texto) {
     stop();
     $('#rrConsentimiento').hidden = true; $('#rrCamara').hidden = true; $('#rrFinal').hidden = false;
-    const pol = $('#rrPolaroid'); pol.replaceChildren();
-    if (data) { const img = document.createElement('img'); img.src = data; img.alt = 'Foto'; pol.append(img); pol.classList.add('revela'); }
-    else { pol.textContent = '🧒'; pol.classList.remove('revela'); }
+    $('#rrEscenaWrap').hidden = true;
+    const pol = $('#rrPolaroid'); pol.hidden = false; pol.replaceChildren(); pol.textContent = '🧒'; pol.classList.remove('revela');
     $('#rrFinalTxt').textContent = texto;
+    $('#rrFin').classList.add('ya');
   }
 
   function rechazar() {
@@ -189,13 +306,11 @@
         await new Promise(r => setTimeout(r, 800));
       }
       cuenta.style.display = 'none';
-      const fl = $('#rrFlash'); fl.classList.remove('disparo'); void fl.offsetWidth; fl.classList.add('disparo');
-      obturador();
       const data = caricatura(v);
       guardarFoto(ctx.id, data);
       ctx.foto = true;
       guardarDecision(ctx.id, ctx.fecha, 'si');
-      setTimeout(() => pantallaFinal(data, '¡Listo! Esta será la imagen de ' + ctx.nombre + '.'), 600);
+      escenaCamara(data, '¡Listo! Esta será la imagen de ' + ctx.nombre + '.');
     } catch (e) {
       cuenta.style.display = 'none';
       $('#rrEstado').textContent = 'No se pudo tomar la foto (' + ((e && e.message) || 'error') + '). Inténtalo de nuevo.';
