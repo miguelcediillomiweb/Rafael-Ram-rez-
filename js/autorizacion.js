@@ -58,7 +58,7 @@
   function estilosEscena() {
     if ($('#rrEstilosEscena')) return;
     const st = document.createElement('style'); st.id = 'rrEstilosEscena';
-    st.textContent = \`
+    st.textContent = `
       .rr-escena-wrap{position:relative;width:300px;height:380px;margin:0 auto}
       @media (max-width:380px){.rr-escena-wrap{zoom:.9}}
       .rr-escena{position:absolute;inset:0;overflow:hidden;border-radius:16px}
@@ -77,11 +77,11 @@
       .rr-fin{opacity:0;pointer-events:none;transition:opacity .6s}
       .rr-fin.ya{opacity:1;pointer-events:auto}
       @keyframes rrdest{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.2)}100%{opacity:0;transform:scale(1.5)}}
-      @keyframes rrvibra{0%{transform:translate(0,0)}25%{transform:translate(1px,0)}50%{transform:translate(0,1px)}75%{transform:translate(-1px,0)}100%{transform:translate(0,0)}}\`;
+      @keyframes rrvibra{0%{transform:translate(0,0)}25%{transform:translate(1px,0)}50%{transform:translate(0,1px)}75%{transform:translate(-1px,0)}100%{transform:translate(0,0)}}`;
     document.head.append(st);
   }
 
-  const SVG_CAMARA = \`
+  const SVG_CAMARA = `
     <svg class="rr-cam" id="rrCam" viewBox="0 0 300 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
         <linearGradient id="rrcBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9d3f6"/><stop offset="1" stop-color="#6a98de"/></linearGradient>
@@ -113,7 +113,7 @@
       <circle cx="187" cy="157" r="4" fill="#fff" opacity=".35"/>
       <circle id="rrcGlow" cx="67" cy="77" r="50" fill="url(#rrcGl)"/>
       <circle id="rrcLG" cx="172" cy="142" r="44" fill="url(#rrcGl)"/>
-    </svg>\`;
+    </svg>`;
 
   /* Escena: sube la camarita, dispara el flash, imprime y la foto se va revelando */
   function escenaCamara(data, texto) {
@@ -202,7 +202,7 @@
   function crear() {
     if (dlg) return;
     dlg = document.createElement('dialog'); dlg.id = 'rrAutorizacion';
-    dlg.innerHTML = \`
+    dlg.innerHTML = `
       <section class="rr-panel">
         <div class="rr-insignia">📸</div>
         <p class="rr-kicker">ESCUELA PRIMARIA RAFAEL RAMÍREZ</p>
@@ -236,7 +236,7 @@
             <button type="button" class="rr-si" id="rrContinuar">Entrar</button>
           </div>
         </div>
-      </section>\`;
+      </section>`;
     document.body.append(dlg);
     $('#rrAceptar').onclick = abrirCamara;
     $('#rrRechazar').onclick = rechazar;
@@ -261,14 +261,14 @@
     $('#rrRechazar').disabled = true;
     ctx.foto = false;
     guardarDecision(ctx.id, ctx.fecha, 'no');
-    pantallaFinal(null, 'Gracias. Usaremos una imagen genérica. Te lo volveremos a preguntar en un mes por si cambias de opinión.');
+    pantallaFinal(null, 'Agradecemos la sinceridad de su respuesta. Puede acceder a la carpeta de actividades de su hijo(a). Usaremos una imagen genérica y, en un mes, le volveremos a preguntar por si cambia de opinión.');
   }
 
   async function abrirCamara() {
     $('#rrAceptar').disabled = true;
     $('#rrConsentimiento').hidden = true; $('#rrCamara').hidden = false;
     $('#rrReintentar').hidden = true; $('#rrTomar').disabled = true;
-    $('#rrEstado').textContent = 'Abriendo la cámara…';
+    $('#rrEstado').textContent = 'Preparando todo…';
     try {
       if (!window.isSecureContext) throw { name: 'SecurityError' };
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw { name: 'SinSoporte' };
@@ -279,7 +279,7 @@
         else throw e1;
       }
       const v = $('#rrVideo'); v.srcObject = stream; await v.play();
-      $('#rrEstado').textContent = 'Cuando estén listos, toquen Tomar foto 😊';
+      $('#rrEstado').textContent = 'Colóquense de frente a la cámara y toquen Tomar foto 😊';
       $('#rrTomar').disabled = false;
     } catch (e) {
       stop();
@@ -332,9 +332,11 @@
     const nombre = sel && sel.selectedOptions[0] ? sel.selectedOptions[0].textContent.trim() : '';
     if (!id || !fecha) { if (typeof continuar === 'function') continuar(); return; }
     corriendo = true;
+    const prueba = /[?&]prueba=1/.test(location.search); /* modo de prueba: siempre pregunta */
     let est = null;
-    try { est = await api({ action: 'aut_consultar', id, fecha }); } catch (_) {}
-    if (est && est.ok && est.preguntar && est.estado === 'nunca' && leerFoto(id)) {
+    if (prueba) est = { ok: true, preguntar: true, estado: 'nunca' };
+    else { try { est = await api({ action: 'aut_consultar', id, fecha }); } catch (_) {} }
+    if (!prueba && est && est.ok && est.preguntar && est.estado === 'nunca' && leerFoto(id)) {
       guardarDecision(id, fecha, 'si');
       mostrarPerfil(id, nombre, true);
       fin(continuar); return;
@@ -347,7 +349,7 @@
     crear();
     $('#rrTitulo').textContent = 'Un recuerdo especial para ' + nombre;
     $('#rrTexto').textContent = (est.estado === 'no' ? 'Ha pasado un mes desde tu última respuesta. ' : '') +
-      '¿Autorizas que tomemos una foto de tu hijo(a)? Es para darle más entusiasmo y un toque personal a esta página. Si no la autorizas, se usará una imagen genérica de niño o niña.';
+      '¿Autorizas que tomemos una foto de frente de tu hijo(a)? Es para darle más entusiasmo y un toque personal a esta página. Si no la autorizas, se usará una imagen genérica de niño o niña.';
     $('#rrConsentimiento').hidden = false; $('#rrCamara').hidden = true; $('#rrFinal').hidden = true;
     $('#rrAceptar').disabled = false; $('#rrRechazar').disabled = false; $('#rrTomar').disabled = true;
     dlg.showModal();
