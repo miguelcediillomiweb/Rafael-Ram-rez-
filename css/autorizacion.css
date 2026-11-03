@@ -1,1 +1,35 @@
-#rrAutorizacion{width:min(94vw,490px);max-height:92dvh;padding:0;border:1px solid #b8d4ff;border-radius:28px;background:#071b3c;color:#fff;overflow:auto;box-shadow:0 24px 90px #020b20b8}#rrAutorizacion::backdrop{background:#06132be0;backdrop-filter:blur(8px)}.rr-panel{position:relative;padding:28px 22px 24px;text-align:center;background:radial-gradient(ellipse at 50% 0,#275da4 0,transparent 58%),linear-gradient(155deg,#0b2b59,#07152e)}.rr-luces{color:#a9d9ff;letter-spacing:7px;text-shadow:0 0 18px #72caff;font-size:20px}.rr-insignia{width:64px;height:64px;margin:12px auto;border-radius:22px;display:grid;place-items:center;background:#ffffff18;border:1px solid #9ccaff88;font-size:32px;box-shadow:0 0 30px #5ebdff55}.rr-kicker{font-size:10px;letter-spacing:2px;color:#c5e2ff}.rr-panel h2{font-size:25px;margin:8px 0}.rr-panel p{line-height:1.55}.rr-privacidad{padding:12px;border-radius:14px;background:#ffffff10;color:#d6e9ff;font-size:12px}.rr-actions{display:grid;gap:10px;margin-top:18px}.rr-actions button{min-height:48px;border:0;border-radius:14px;padding:12px;font-weight:800;font-size:15px}.rr-si{background:linear-gradient(120deg,#8ed8ff,#d6f2ff);color:#08244a}.rr-no{background:#ffffff16;color:#fff;border:1px solid #ffffff38!important}.rr-camara-marco{position:relative;overflow:hidden;border:3px solid #8fd8ff;border-radius:22px;background:#020a18;box-shadow:0 0 28px #59bfff66}.rr-camara-marco video{display:block;width:100%;max-height:52dvh;object-fit:cover;transform:scaleX(-1)}.rr-cuenta{position:absolute;inset:0;display:grid;place-items:center;background:#07152c55;font-size:clamp(70px,20vw,120px);font-weight:900;text-shadow:0 0 30px #62caff}.rr-cuenta.pulso{animation:rrPulse .8s ease}.rr-flash{position:absolute;inset:0;pointer-events:none}.rr-flash.disparo{animation:rrFlash .55s ease}.rr-estado{color:#d5ebff;font-size:14px}.rr-polaroid{width:min(70%,260px);margin:18px auto;padding:12px 12px 42px;background:#fff;color:#123;box-shadow:0 14px 35px #0008;transform:rotate(-2deg);min-height:180px;display:grid;place-items:center;font-size:68px}.rr-polaroid img{width:100%;aspect-ratio:1;object-fit:cover;filter:saturate(1.08) contrast(1.03)}@keyframes rrPulse{50%{transform:scale(1.18);opacity:.7}}@keyframes rrFlash{0%{background:#fff}100%{background:transparent}}@media(prefers-reduced-motion:reduce){.rr-cuenta.pulso,.rr-flash.disparo{animation:none}}
+/* Oculta el botón "Perfil familiar" anterior */
+#perfilFamiliaFab,#perfilFamiliaDlg,#perfilModal{display:none!important}
+
+#rrAutorizacion{width:min(92vw,440px);max-height:92dvh;overflow:auto;padding:0;border:2px solid #d4af37;border-radius:24px;background:#f7f9fd;color:#17243b;box-shadow:0 25px 90px #06132999}
+#rrAutorizacion::backdrop{background:rgba(4,13,31,.8);backdrop-filter:blur(4px)}
+.rr-panel{padding:22px 20px;text-align:center}
+.rr-insignia{font-size:44px;animation:rrlat 1.6s ease-in-out infinite}
+.rr-kicker{margin:4px 0;font:800 11px/1.2 system-ui,sans-serif;letter-spacing:.08em;color:#8a6d12}
+.rr-panel h2{margin:6px 0 10px;font-size:1.3rem;color:#14306b}
+.rr-panel p{margin:8px 0;line-height:1.45}
+.rr-privacidad{font-size:.85rem;color:#4a5a78;background:#eaf0fb;border-radius:12px;padding:10px}
+.rr-actions{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.rr-actions button,#rrContinuar{border:0;border-radius:14px;padding:14px;font:800 16px system-ui,sans-serif;cursor:pointer}
+.rr-si,#rrContinuar{background:linear-gradient(135deg,#14306b,#234779);color:#fff;border:2px solid #d4af37!important}
+.rr-no{background:#e7ecf5;color:#17243b}
+.rr-actions button:disabled{opacity:.5}
+.rr-camara-marco{position:relative;border-radius:18px;overflow:hidden;background:#000;border:3px solid #d4af37;aspect-ratio:3/4;max-height:52dvh;margin:0 auto}
+#rrVideo{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.rr-cuenta{position:absolute;inset:0;display:grid;place-items:center;font:900 96px system-ui,sans-serif;color:#fff;text-shadow:0 4px 20px #000}
+.rr-cuenta.pulso{animation:rrpulso .8s ease-out}
+.rr-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.rr-flash.disparo{animation:rrflash .6s ease-out}
+.rr-estado{font-size:.95rem;color:#243a5e}
+.rr-polaroid{width:220px;min-height:220px;margin:8px auto;padding:10px 10px 36px;background:#fff;border-radius:6px;box-shadow:0 10px 26px #0004;display:grid;place-items:center;font-size:90px;transform:rotate(-3deg)}
+.rr-polaroid img{width:100%;display:block;border-radius:3px}
+.rr-polaroid.revela img{animation:rrrevela 1.8s ease-out}
+#rrFinal #rrContinuar{width:100%;margin-top:10px}
+#rrPerfil{display:flex;align-items:center;gap:12px;margin:10px 0 14px;padding:10px 14px;background:#eaf0fb;border:2px solid #d4af37;border-radius:18px;text-align:left}
+#rrPerfil p{margin:0;font-weight:700;color:#14306b}
+.rr-avatar{flex:0 0 64px;width:64px;height:64px;border-radius:50%;overflow:hidden;border:3px solid #d4af37;background:#fff;display:grid;place-items:center;font-size:34px}
+.rr-avatar img{width:100%;height:100%;object-fit:cover}
+@keyframes rrflash{0%{opacity:1}100%{opacity:0}}
+@keyframes rrpulso{0%{transform:scale(1.6);opacity:0}30%{opacity:1}100%{transform:scale(1);opacity:.9}}
+@keyframes rrlat{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes rrrevela{0%{filter:brightness(2.4) blur(6px);opacity:.2}100%{filter:none;opacity:1}}
