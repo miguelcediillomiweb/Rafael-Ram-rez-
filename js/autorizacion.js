@@ -443,6 +443,17 @@
     const webview = /; wv\)/.test(ua) || /Version\/[\d.]+ (Chrome|Mobile)/.test(ua);
     return otros || app || webview || !/Chrome\/\d+/.test(ua);
   }
+  function urlChrome() {
+    const destino = location.href;
+    const ua = navigator.userAgent || '';
+    if (/Android/i.test(ua)) {
+      const u = new URL(destino);
+      return 'intent://' + u.host + u.pathname + u.search + u.hash +
+        '#Intent;scheme=' + u.protocol.replace(':', '') + ';package=com.android.chrome;end';
+    }
+    return 'googlechromes://' + destino.replace(/^https?:\\/\\//i, '');
+  }
+
   function forzarChrome() {
     const prueba = /[?&]probarchrome=1/.test(location.search);
     if (!prueba && (!necesitaChrome() || sessionStorage.getItem('rr_sin_chrome') === '1')) return;
