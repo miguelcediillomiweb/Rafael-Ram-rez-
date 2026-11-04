@@ -26,32 +26,86 @@
   }
   const stop = () => { if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; } };
 
-  function obturador() {
+  /* ===== Sonidos (se generan en el código, sin archivos) ===== */
+  let AUD = null;
+  function audio() {
     try {
-      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
-      const a = new AC(), dur = .09;
-      [0, .11].forEach(t => {
-        const buf = a.createBuffer(1, Math.floor(a.sampleRate * dur), a.sampleRate), ch = buf.getChannelData(0);
-        for (let i = 0; i < ch.length; i++) ch[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / ch.length, 3);
-        const s = a.createBufferSource(), g = a.createGain(); g.gain.value = .5;
-        s.buffer = buf; s.connect(g); g.connect(a.destination); s.start(a.currentTime + t);
-      });
-      setTimeout(() => a.close(), 600);
-    } catch (_) {}
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+      if (!AUD) AUD = new AC();
+      if (AUD.state === 'suspended') AUD.resume();
+      return AUD;
+    } catch (_) { return null; }
+  }
+  function ruido(a, dur) {
+    const n = Math.floor(a.sampleRate * dur), b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+    return b;
+  }
+  /* "fiuuu" cuando sube la camarita */
+  function whoosh() {
+    const a = audio(); if (!a) return; const t = a.currentTime;
+    const s = a.createBufferSource(); s.buffer = ruido(a, .8);
+    const f = a.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.2;
+    f.frequency.setValueAtTime(250, t); f.frequency.exponentialRampToValueAtTime(2200, t + .55);
+    const g = a.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.35, t + .25); g.gain.linearRampToValueAtTime(0, t + .75);
+    s.connect(f); f.connect(g); g.connect(a.destination); s.start(t);
+  }
+  function chasquido(a, t, dur, freq, vol) {
+    const s = a.createBufferSource(); s.buffer = ruido(a, dur);
+    const f = a.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = freq;
+    const g = a.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    s.connect(f); f.connect(g); g.connect(a.destination); s.start(t);
+  }
+  /* Obturador mecánico de dos tiempos */
+  function obturador() {
+    const a = audio(); if (!a) return; const t = a.currentTime;
+    chasquido(a, t, .04, 2500, .7);
+    const o = a.createOscillator(), g = a.createGain(); o.type = 'sine';
+    o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(60, t + .08);
+    g.gain.setValueAtTime(.5, t); g.gain.exponentialRampToValueAtTime(.001, t + .1);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .12);
+    chasquido(a, t + .11, .07, 1200, .55);
+  }
+  /* Motorcito que va y viene mientras imprime la foto */
+  function motorcito() {
+    const a = audio(); if (!a) return; const t0 = a.currentTime;
+    for (let i = 0; i < 5; i++) {
+      const t = t0 + i * .5, o = a.createOscillator(), f = a.createBiquadFilter(), g = a.createGain();
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(75 + i * 8, t); o.frequency.linearRampToValueAtTime(115 + i * 8, t + .18); o.frequency.linearRampToValueAtTime(85 + i * 8, t + .4);
+      f.type = 'lowpass'; f.frequency.value = 600;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.14, t + .05); g.gain.setValueAtTime(.14, t + .34); g.gain.linearRampToValueAtTime(0, t + .42);
+      o.connect(f); f.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .45);
+    }
+  }
+  /* "Ding" alegre cuando termina */
+  function ding() {
+    const a = audio(); if (!a) return; const t = a.currentTime;
+    [[1318.5, 0], [1760, .12]].forEach(([fr, d]) => {
+      const o = a.createOscillator(), g = a.createGain(); o.type = 'sine'; o.frequency.value = fr;
+      g.gain.setValueAtTime(0, t + d); g.gain.linearRampToValueAtTime(.25, t + d + .01); g.gain.exponentialRampToValueAtTime(.001, t + d + 1.2);
+      o.connect(g); g.connect(a.destination); o.start(t + d); o.stop(t + d + 1.3);
+    });
   }
 
-  /* Zumbido corto de la camarita imprimiendo la foto */
-  function zumbido() {
-    try {
-      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
-      const a = new AC(), t0 = a.currentTime, o = a.createOscillator(), f = a.createBiquadFilter(), g = a.createGain();
-      o.type = 'sawtooth';
-      o.frequency.setValueAtTime(70, t0); o.frequency.linearRampToValueAtTime(125, t0 + .25); o.frequency.linearRampToValueAtTime(95, t0 + 2.2);
-      f.type = 'lowpass'; f.frequency.value = 520;
-      g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.16, t0 + .15); g.gain.setValueAtTime(.16, t0 + 2); g.gain.linearRampToValueAtTime(0, t0 + 2.6);
-      o.connect(f); f.connect(g); g.connect(a.destination); o.start(); o.stop(t0 + 2.7);
-      setTimeout(() => a.close(), 3000);
-    } catch (_) {}
+  /* ===== Efectos visuales ===== */
+  function brillitos(esc) {
+    for (let i = 0; i < 16; i++) {
+      const b = document.createElement('span'); b.className = 'rr-brillo'; b.textContent = i % 3 ? '✦' : '✨';
+      b.style.left = (55 + Math.random() * 190) + 'px'; b.style.top = (5 + Math.random() * 190) + 'px';
+      b.style.fontSize = (12 + Math.random() * 14) + 'px'; b.style.animationDelay = (Math.random() * 4) + 's';
+      esc.append(b); setTimeout(() => b.remove(), 6000);
+    }
+  }
+  function confeti(esc) {
+    const col = ['#ff5e8a', '#ffc400', '#4aa3ff', '#7ee081', '#b57bff', '#ffffff'];
+    for (let i = 0; i < 46; i++) {
+      const c = document.createElement('i'); c.className = 'rr-conf';
+      c.style.left = (Math.random() * 300) + 'px'; c.style.background = col[i % col.length];
+      c.style.animationDuration = (1.8 + Math.random() * 1.6) + 's'; c.style.animationDelay = (Math.random() * .6) + 's';
+      c.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px');
+      esc.append(c); setTimeout(() => c.remove(), 4500);
+    }
   }
 
   /* Estilos de la camarita instantánea (se agregan solos) */
@@ -70,13 +124,20 @@
       .rr-card img.revela{filter:none;opacity:1;transition:filter 4.5s ease-in-out,opacity 4.5s ease-in}
       .rr-card-nombre{position:absolute;left:0;right:0;top:7px;min-height:20px;text-align:center;font:700 16px 'Segoe Print','Bradley Hand','Comic Sans MS',cursive;color:#27406e}
       .rr-escena-flash{position:absolute;inset:0;z-index:5;background:#fff;opacity:0;pointer-events:none}
-      .rr-escena-flash.disparo{animation:rrflash .7s ease-out}
-      #rrcGlow,#rrcLG{opacity:0;transform-origin:center;transform-box:fill-box}
+      .rr-escena-flash.rr-dispara{animation:rrflash2 .9s ease-out}
+      .rr-cam.rebote{animation:rrbote .5s ease-out}
+      .rr-brillo{position:absolute;z-index:6;color:#ffd34d;opacity:0;pointer-events:none;text-shadow:0 0 8px #fff;animation:rrbrillo 1.2s ease-out forwards}
+      .rr-conf{position:absolute;top:-12px;z-index:6;width:8px;height:12px;border-radius:2px;pointer-events:none;animation:rrconf 2.4s ease-in forwards}
+      #rrcGlow,#rrcLG{opacity:0}
       .rr-cam.destello #rrcGlow,.rr-cam.destello #rrcLG{animation:rrdest .8s ease-out}
       .rr-escena.trabaja{animation:rrvibra .12s linear infinite}
       .rr-fin{opacity:0;pointer-events:none;transition:opacity .6s}
       .rr-fin.ya{opacity:1;pointer-events:auto}
-      @keyframes rrdest{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.2)}100%{opacity:0;transform:scale(1.5)}}
+      @keyframes rrflash2{0%{opacity:.95}18%{opacity:.15}32%{opacity:.75}100%{opacity:0}}
+      @keyframes rrbote{0%,100%{transform:translateY(0)}30%{transform:translateY(-9px)}60%{transform:translateY(0)}80%{transform:translateY(-3px)}}
+      @keyframes rrbrillo{0%{opacity:0;transform:scale(.2) rotate(0)}40%{opacity:1;transform:scale(1.2) rotate(90deg)}100%{opacity:0;transform:scale(.6) rotate(180deg)}}
+      @keyframes rrconf{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:1;transform:translate(var(--dx,0),400px) rotate(720deg)}}
+      @keyframes rrdest{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
       @keyframes rrvibra{0%{transform:translate(0,0)}25%{transform:translate(1px,0)}50%{transform:translate(0,1px)}75%{transform:translate(-1px,0)}100%{transform:translate(0,0)}}`;
     document.head.append(st);
   }
@@ -111,8 +172,8 @@
       <circle cx="172" cy="142" r="33" fill="url(#rrcLens)"/>
       <ellipse cx="160" cy="130" rx="11" ry="7" fill="#fff" opacity=".75" transform="rotate(-30 160 130)"/>
       <circle cx="187" cy="157" r="4" fill="#fff" opacity=".35"/>
-      <circle id="rrcGlow" cx="67" cy="77" r="50" fill="url(#rrcGl)"/>
-      <circle id="rrcLG" cx="172" cy="142" r="44" fill="url(#rrcGl)"/>
+      <circle id="rrcGlow" cx="67" cy="77" r="78" fill="url(#rrcGl)"/>
+      <circle id="rrcLG" cx="172" cy="142" r="62" fill="url(#rrcGl)"/>
     </svg>`;
 
   /* Escena: sube la camarita, dispara el flash, imprime y la foto se va revelando */
@@ -128,18 +189,21 @@
     img.src = data; $('#rrFinalTxt').textContent = texto; fin.classList.remove('ya');
     const normal = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
     const T = (ms, fn) => setTimeout(fn, normal ? ms : 30);
+    let terminado = false;
+    const final = () => { if (terminado) return; terminado = true; fin.classList.add('ya'); ding(); if (normal) confeti(esc); };
     const escribir = () => {
       const nombre = ctx.nombre || ''; let i = 0;
-      if (!nombre) { fin.classList.add('ya'); return; }
-      const iv = setInterval(() => { nom.textContent = nombre.slice(0, ++i); if (i >= nombre.length) { clearInterval(iv); fin.classList.add('ya'); } }, 110);
+      if (!nombre) { final(); return; }
+      const iv = setInterval(() => { nom.textContent = nombre.slice(0, ++i); if (i >= nombre.length) { clearInterval(iv); final(); } }, 110);
     };
-    T(80, () => cam.classList.add('sube'));
-    T(1400, () => { cam.classList.add('destello'); fl.classList.add('disparo'); obturador(); });
-    T(2100, () => { esc.classList.add('trabaja'); zumbido(); });
+    T(80, () => { cam.classList.add('sube'); whoosh(); });
+    T(1150, () => cam.classList.add('rebote'));
+    T(1500, () => { cam.classList.add('destello'); fl.classList.add('rr-dispara'); obturador(); });
+    T(2200, () => { esc.classList.add('trabaja'); motorcito(); });
     T(2400, () => card.classList.add('sale'));
-    T(5000, () => { esc.classList.remove('trabaja'); img.classList.add('revela'); });
+    T(5000, () => { esc.classList.remove('trabaja'); img.classList.add('revela'); if (normal) brillitos(esc); });
     T(5700, escribir);
-    T(11000, () => fin.classList.add('ya'));
+    T(11000, final);
   }
 
   /* Convierte la foto en pop art: pocos colores planos, puntos de semitono y
