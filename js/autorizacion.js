@@ -430,4 +430,69 @@
     }).observe(priv, { attributes: true, attributeFilter: ['hidden'] });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', vigilar); else vigilar();
+
+  /* ===== Forzar que la web se abra en Chrome (celulares) ===== */
+  function necesitaChrome() {
+    const ua = navigator.userAgent || '';
+    const ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    const android = /Android/.test(ua);
+    if (!ios && !android) return false; /* en computadora no se fuerza */
+    if (ios) return !/CriOS/.test(ua);
+    const otros = /EdgA|OPR\/|OPT\/|SamsungBrowser|Firefox|DuckDuckGo|MiuiBrowser|UCBrowser|Vivaldi|YaBrowser|HuaweiBrowser|HeyTap|VivoBrowser/i.test(ua);
+    const app = /FBAN|FBAV|FB_IAB|Instagram|WhatsApp|Messenger|Line\/|TikTok|musical_ly|BytedanceWebview|Snapchat|Twitter|LinkedInApp|Pinterest|GSA\//i.test(ua);
+    const webview = /; wv\)/.test(ua) || /Version\/[\d.]+ (Chrome|Mobile)/.test(ua);
+    return otros || app || webview || !/Chrome\/\d+/.test(ua);
+  }
+  function forzarChrome() {
+    const prueba = /[?&]probarchrome=1/.test(location.search);
+    if (!prueba && (!necesitaChrome() || sessionStorage.getItem('rr_sin_chrome') === '1')) return;
+    const st = document.createElement('style');
+    st.textContent = \`
+      #rrChrome{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;color:#fff;font-family:system-ui,sans-serif;background:linear-gradient(160deg,#0d2149,#1b3b7a)}
+      #rrChrome .rr-ch-ico{font-size:64px;animation:rrlat 1.6s ease-in-out infinite}
+      #rrChrome h2{margin:0;font-size:1.5rem}
+      #rrChrome p{margin:0;max-width:340px;line-height:1.45;color:#dce6fb}
+      #rrChrome button{width:min(320px,100%);border:2px solid #d4af37;border-radius:14px;padding:15px;font:800 16px system-ui,sans-serif;cursor:pointer}
+      #rrChrome .rr-ch-si{background:#fff;color:#14306b}
+      #rrChrome .rr-ch-no{background:transparent;color:#fff}
+      #rrChrome .rr-ch-pasos{font-size:.9rem;background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px}
+      #rrChrome .rr-ch-seguir{background:none;border:0;color:#9db3e0;font-size:.8rem;text-decoration:underline;padding:6px;width:auto}
+      @keyframes rrlat{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}\`;
+    document.head.append(st);
+    const d = document.createElement('div'); d.id = 'rrChrome';
+    d.innerHTML = \`
+      <div class="rr-ch-ico">🌐</div>
+      <h2>Abre esta página en Chrome</h2>
+      <p>Para que la cámara, las notificaciones y todas las actividades funcionen bien, esta página debe abrirse en <b>Google Chrome</b>.</p>
+      <button type="button" class="rr-ch-si" id="rrChAbrir">🚀 Abrir en Chrome</button>
+      <button type="button" class="rr-ch-no" id="rrChCopiar">📋 Copiar liga</button>
+      <p class="rr-ch-pasos" id="rrChPasos">Si no se abre solo: toca <b>Copiar liga</b>, abre <b>Chrome</b>, pega la liga en la barra de arriba y entra.</p>
+      <button type="button" class="rr-ch-seguir" id="rrChSeguir">Continuar sin Chrome (la cámara puede fallar)</button>\`;
+    document.body.append(d);
+    document.documentElement.style.overflow = 'hidden';
+    const ua = navigator.userAgent || '', esIOS = /iPhone|iPad|iPod|Macintosh/.test(ua);
+    document.getElementById('rrChAbrir').onclick = () => {
+      location.href = urlChrome();
+      setTimeout(() => {
+        document.getElementById('rrChPasos').innerHTML = esIOS
+          ? 'Si Chrome no se abrió, instálalo desde la <b>App Store</b> o toca <b>Copiar liga</b>, ábrelo y pega la liga en la barra.'
+          : 'Si Chrome no se abrió, instálalo desde <b>Play Store</b> o toca <b>Copiar liga</b>, ábrelo y pega la liga en la barra.';
+      }, 1800);
+    };
+    document.getElementById('rrChCopiar').onclick = async () => {
+      let ok = false;
+      try { await navigator.clipboard.writeText(location.href); ok = true; } catch (_) {
+        try { const t = document.createElement('textarea'); t.value = location.href; document.body.append(t); t.select(); ok = document.execCommand('copy'); t.remove(); } catch (__) {}
+      }
+      document.getElementById('rrChPasos').innerHTML = ok
+        ? '✅ <b>Liga copiada.</b> Ahora abre <b>Chrome</b>, pega la liga en la barra de arriba y toca Ir.'
+        : 'No se pudo copiar. Mantén presionada la dirección de arriba, cópiala y pégala en Chrome.';
+    };
+    document.getElementById('rrChSeguir').onclick = () => {
+      try { sessionStorage.setItem('rr_sin_chrome', '1'); } catch (_) {}
+      d.remove(); document.documentElement.style.overflow = '';
+    };
+  }
+  forzarChrome();
+
 })();
