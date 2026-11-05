@@ -5,7 +5,8 @@
   'use strict';
   const API = 'https://script.google.com/macros/s/AKfycbwyr82o7DdfFF_9gBSynpGquPPyBGkkr32xX_XxJomTip7OwB0x5ntxLgt2Nw-R4RxPaA/exec';
   const KEY = 'rr_perfil_';
-  const VERSION = 'v8';
+  const VERSION = 'v10';
+  const DECISION_KEY = KEY + 'decision_';
   const $ = s => document.querySelector(s);
   const esperar = (ms, v) => new Promise(r => setTimeout(() => r(v), ms));
   let dlg = null, ctx = {}, corriendo = false, hecho = false;
@@ -19,10 +20,19 @@
       return await r.json();
     } finally { clearTimeout(t); }
   }
+  function leerDecisionLocal(id) {
+    try { return localStorage.getItem(DECISION_KEY + id) || ''; } catch (_) { return ''; }
+  }
+  function guardarDecisionLocal(id, decision) {
+    try { localStorage.setItem(DECISION_KEY + id, decision); } catch (_) {}
+  }
   async function guardarDecision(id, fecha, decision) {
     for (let i = 0; i < 3; i++) {
-      try { const r = await api({ action: 'aut_guardar', id, fecha, decision }); if (r && r.ok) return true; } catch (_) {}
-      await esperar(1500);
+      try {
+        const r = await api({ action: 'aut_guardar', id, fecha, decision });
+        if (r && r.ok) { guardarDecisionLocal(id, decision); return true; }
+      } catch (_) {}
+      await esperar(1200);
     }
     return false;
   }
@@ -153,9 +163,9 @@
       .rr-pantallazo{position:absolute;inset:0;z-index:20;background:#fff;opacity:0;pointer-events:none;border-radius:22px}
       .rr-pantallazo.on{animation:rrpant .9s ease-out}
       .rr-polaroid{width:200px;min-height:200px;margin:8px auto;background:#fff;border-radius:6px;box-shadow:0 10px 26px #0004;display:grid;place-items:center;font-size:90px;transform:rotate(-3deg)}
-      #rrPerfil{display:flex;align-items:center;gap:12px;margin:10px 0 14px;padding:10px 14px;background:#eaf0fb;border:2px solid #d4af37;border-radius:18px;text-align:left}
-      #rrPerfil p{margin:0;font-weight:700;color:#14306b}
-      .rr-avatar{flex:0 0 64px;width:64px;height:64px;border-radius:50%;overflow:hidden;border:3px solid #d4af37;background:#fff;display:grid;place-items:center;font-size:34px}
+      #rrPerfil{display:flex;align-items:center;gap:16px;margin:10px 0 14px;padding:14px 16px;background:#eaf0fb;border:2px solid #d4af37;border-radius:20px;text-align:left}
+      #rrPerfil p{margin:0;font-weight:700;font-size:1.05rem;line-height:1.35;color:#14306b}
+      .rr-avatar{flex:0 0 120px;width:120px;height:120px;border-radius:50%;overflow:hidden;border:4px solid #d4af37;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.25);display:grid;place-items:center;font-size:64px}
       .rr-avatar img{width:100%;height:100%;object-fit:cover;object-position:center top}
       .rr-escena-wrap{position:relative;width:300px;height:380px;margin:0 auto}
       @media (max-width:380px){.rr-escena-wrap{zoom:.9}}
@@ -291,23 +301,26 @@
     $('#rrFin').classList.add('ya');
   }
 
-  function rechazar() {
+  async function rechazar() {
     $('#rrRechazar').disabled = true; $('#rrAceptar').disabled = true;
     ctx.foto = null;
-    guardarDecision(ctx.id, ctx.fecha, 'no');
-    pantallaSimple('Agradecemos la sinceridad de su respuesta. Puede acceder a la carpeta de actividades de su hijo(a). Usaremos una imagen genérica y, en un mes, le volveremos a preguntar por si cambia de opinión.');
+    /* La respuesta negativa queda registrada una sola vez. No se programa otra pregunta. */
+    const guardada = await guardarDecision(ctx.id, ctx.fecha, 'no');
+    if (!guardada) guardarDecisionLocal(ctx.id, 'no');
+    pantallaSimple('Gracias por indicarnos su decisión. Se mostrará un avatar genérico para su hijo(a). No volveremos a solicitar esta autorización.');
   }
 
   async function aceptar() {
     $('#rrAceptar').disabled = true; $('#rrRechazar').disabled = true;
     audio(); /* el toque habilita los sonidos */
-    guardarDecision(ctx.id, ctx.fecha, 'si');
+    const guardada = await guardarDecision(ctx.id, ctx.fecha, 'si');
+    if (!guardada) guardarDecisionLocal(ctx.id, 'si');
     $('#rrTitulo').textContent = 'Preparando todo…';
     mostrarSolo('rrPrep'); $('#rrCuenta2').textContent = ''; $('#rrVisorTxt').textContent = 'Preparando todo…';
     const [foto] = await Promise.all([obtenerFoto(ctx.id, ctx.fecha), esperar(1400)]);
     if (!foto) {
       $('#rrTitulo').textContent = 'Un recuerdo especial para ' + ctx.nombre;
-      pantallaSimple('¡Gracias por autorizar! La caricatura de ' + ctx.nombre + ' todavía se está preparando. Por ahora verá una imagen genérica y se la mostraremos en cuanto esté lista.');
+      pantallaSimple('¡Gracias por autorizar! Estamos localizando la caricatura preparada por la escuela. Por ahora verá un avatar genérico; cuando la imagen esté disponible aparecerá en su perfil.');
       return;
     }
     guardarFoto(ctx.id, foto); ctx.foto = foto;
@@ -373,7 +386,7 @@
   }
   function fin(continuar) { corriendo = false; hecho = true; if (typeof continuar === 'function') continuar(); }
 
-  /* Actualiza la caricatura guardada si cambió o si no existe (una vez por semana) */
+  /* Busca la caricatura preparada por la escuela cuando aún no está guardada en este celular. */
   function refrescar(id, fecha, nombre) {
     let ts = 0; try { ts = Number(localStorage.getItem(KEY + 'ts_' + id) || 0); } catch (_) {}
     if (leerFoto(id) && Date.now() - ts < 6048e5) return;
@@ -387,40 +400,69 @@
     const nombre = sel && sel.selectedOptions[0] ? sel.selectedOptions[0].textContent.trim() : '';
     if (!id || !fecha) { if (typeof continuar === 'function') continuar(); return; }
     corriendo = true;
-    const prueba = /[?&]prueba=1/.test(location.search); /* modo de prueba: siempre pregunta */
+
+    const prueba = /[?&]prueba=1/.test(location.search);
+    const decisionLocal = prueba ? '' : leerDecisionLocal(id);
     let est = null;
     if (prueba) est = { ok: true, preguntar: true, estado: 'nunca' };
     else { try { est = await api({ action: 'aut_consultar', id, fecha }); } catch (_) {} }
 
-    /* Ya autorizó antes */
-    if (est && est.ok && !est.preguntar && est.estado === 'si') {
-      if (yaVisto(id)) { mostrarPerfil(id, nombre, leerFoto(id)); refrescar(id, fecha, nombre); fin(continuar); return; }
+    /* Una decisión ya tomada en este dispositivo nunca vuelve a preguntarse. */
+    if (decisionLocal === 'no') {
+      mostrarPerfil(id, nombre, null); fin(continuar); return;
+    }
+    if (decisionLocal === 'si') {
+      const guardada = leerFoto(id);
+      if (guardada) { mostrarPerfil(id, nombre, guardada); refrescar(id, fecha, nombre); fin(continuar); return; }
+      const fotoLocalizada = await Promise.race([obtenerFoto(id, fecha), esperar(8000, null)]);
+      if (fotoLocalizada) {
+        guardarFoto(id, fotoLocalizada);
+        ctx = { id, fecha, nombre, continuar, foto: fotoLocalizada };
+        crear(); $('#rrTitulo').textContent = 'Un recuerdo especial para ' + nombre; dlg.showModal();
+        await animacion(fotoLocalizada); return;
+      }
+      mostrarPerfil(id, nombre, null); refrescar(id, fecha, nombre); fin(continuar); return;
+    }
+
+    /* Respuesta registrada en Sheets: respetarla también en otros teléfonos. */
+    if (est && est.ok && est.estado === 'no') {
+      guardarDecisionLocal(id, 'no');
+      mostrarPerfil(id, nombre, null); fin(continuar); return;
+    }
+    if (est && est.ok && est.estado === 'si') {
+      guardarDecisionLocal(id, 'si');
       const foto = await Promise.race([obtenerFoto(id, fecha), esperar(8000, null)]);
-      if (!foto) { mostrarPerfil(id, nombre, null); fin(continuar); return; }
+      if (!foto) { mostrarPerfil(id, nombre, null); refrescar(id, fecha, nombre); fin(continuar); return; }
       guardarFoto(id, foto);
       ctx = { id, fecha, nombre, continuar, foto };
       crear(); $('#rrTitulo').textContent = 'Un recuerdo especial para ' + nombre; dlg.showModal();
-      await animacion(foto);
-      return;
+      await animacion(foto); return;
     }
-    /* Dijo que no (aún no toca volver a preguntar) o no hay conexión */
-    if (!est || !est.ok || !est.preguntar) { mostrarPerfil(id, nombre, null); fin(continuar); return; }
 
-    /* Primera vez (o ya pasó un mes desde su "no") */
+    /* Si no hay respuesta del servidor, no pedir consentimiento sin poder registrarlo. */
+    if (!est || !est.ok) {
+      mostrarPerfil(id, nombre, null); fin(continuar); return;
+    }
+    if (!est.preguntar) {
+      mostrarPerfil(id, nombre, null); fin(continuar); return;
+    }
+
+    /* Primera y única solicitud de autorización. */
     ctx = { id, fecha, nombre, continuar, foto: null };
     crear();
     $('#rrTitulo').textContent = 'Un recuerdo especial para ' + nombre;
-    $('#rrTexto').textContent = (est.estado === 'no' ? 'Ha pasado un mes desde su última respuesta. ' : '') +
-      'Para una mejor experiencia, mostraremos en su portal una caricatura de su hijo(a), elaborada por la escuela con cuidado y respeto a su privacidad. Solo usted la verá con su clave y no se publica. ¿Autoriza?';
+    $('#rrTexto').textContent = 'La escuela preparó previamente una caricatura de su hijo(a). Si autoriza, el portal mostrará una animación de cámara instantánea y revelará esa caricatura. No se tomará ni enviará una fotografía nueva. ¿Autoriza que se muestre en el perfil escolar?';
     mostrarSolo('rrConsentimiento');
     $('#rrAceptar').disabled = false; $('#rrRechazar').disabled = false;
     dlg.showModal();
   }
 
+
   window.RRAutorizacion = { iniciar: (id, nombre, continuar) => flujo(continuar) };
 
   /* Se activa solo cuando el aula del niño se muestra */
   function vigilar() {
+    estilos();
     const priv = $('#privado'); if (!priv) return;
     new MutationObserver(() => {
       if (priv.hidden) { hecho = false; corriendo = false; const p = $('#rrPerfil'); if (p) p.remove(); }
