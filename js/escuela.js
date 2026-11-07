@@ -132,7 +132,7 @@ async function cargar(){
         : '';
       // El evento de la Revolución Mexicana usa el contador visual dedicado del portal.
       // Se conserva el contador automático para todos los demás eventos.
-      const esRevolucion = norm(c.evento || '').includes('revolucion');
+      const esRevolucion = norm((c.evento || '') + ' ' + (c.descripcion || '')).includes('revolucion');
       const contador = fechaContador && !esRevolucion
         ? '<div class="cuenta-regresiva" data-fecha-evento="' + esc(fechaContador) + '" aria-live="off"><strong>Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado"></p></div>'
         : '';
