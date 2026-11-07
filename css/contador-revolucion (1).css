@@ -1,0 +1,785 @@
+/* CONTADOR REVOLUCIÓN MEXICANA · Escuela Primaria Rafael Ramírez
+   Versión mejorada: locomotora de época, paisaje con parallax,
+   barra brillante, tricolor con destellos y tarjetas neón.
+   Sin librerías externas. */
+
+@property --rev-ang {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+#contador-revolucion {
+  --rev-navy: #0B1B3D;
+  --rev-gold: #D4AF37;
+  --rev-green: #159447;
+  --rev-red: #CE3434;
+  width: 100%;
+  max-width: 560px;
+  margin: 12px auto 3px;
+  padding: 12px 14px 12px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  box-sizing: border-box;
+  color: #fff;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 19px;
+  background:
+    radial-gradient(circle at 8% 4%, rgba(21,148,71,.28), transparent 38%),
+    radial-gradient(circle at 94% 96%, rgba(206,52,52,.25), transparent 40%),
+    linear-gradient(135deg, #08152e 0%, #10294d 54%, #17345c 100%);
+  box-shadow: 0 12px 28px rgba(11,27,61,.18), inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+#contador-revolucion::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  opacity: .22;
+  background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,.12) 48%, transparent 70%);
+}
+
+/* ============ ESCENA ============ */
+
+#contador-revolucion .rev-tren-zona {
+  position: relative;
+  height: 128px;
+  margin: 0 2px 8px;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.2);
+}
+
+/* ---- Paisaje ---- */
+#contador-revolucion .rev-paisaje {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #2c5aa5 0%, #5f8fd0 28%, #f2a45f 66%, #ffd88a 100%);
+}
+
+/* Tierra bajo la vía */
+#contador-revolucion .rev-paisaje::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 20px;
+  background: linear-gradient(180deg, #a8703b, #6b4222);
+}
+
+#contador-revolucion .rev-sol {
+  position: absolute;
+  top: 10px;
+  right: 14%;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffbe0 0 35%, #ffd45c 70%);
+  box-shadow: 0 0 14px 6px rgba(255,214,102,.6);
+  animation: rev-sol 3s ease-in-out infinite alternate;
+}
+
+#contador-revolucion .rev-nube {
+  position: absolute;
+  top: 16px;
+  left: 105%;
+  width: 34px;
+  height: 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.88);
+  animation: rev-nube 38s linear infinite;
+  animation-delay: -14s;
+}
+
+#contador-revolucion .rev-nube::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: -6px;
+  width: 15px;
+  height: 12px;
+  border-radius: 50%;
+  background: inherit;
+}
+
+#contador-revolucion .rev-nube.n2 {
+  top: 36px;
+  width: 24px;
+  height: 8px;
+  opacity: .7;
+  animation-duration: 26s;
+  animation-delay: -4s;
+}
+
+#contador-revolucion .rev-capa {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-repeat: repeat-x;
+  background-position: 0 100%;
+  will-change: background-position;
+}
+
+/* Cerros lejanos */
+#contador-revolucion .rev-capa.lejos {
+  bottom: 34px;
+  height: 70px;
+  opacity: .9;
+  background-size: 300px 70px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='70' viewBox='0 0 300 70'><path d='M0 70V38L38 16L72 38L112 10L158 44L204 20L252 42L300 38V70Z' fill='%23c0634a'/><path d='M0 70V52L56 32L98 52L150 28L212 54L262 36L300 52V70Z' fill='%23944b49'/></svg>");
+  animation: rev-lejos 50s linear infinite;
+}
+
+/* Lomas con nopales y magueyes */
+#contador-revolucion .rev-capa.medio {
+  bottom: 14px;
+  height: 70px;
+  background-size: 260px 70px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='70' viewBox='0 0 260 70'><path d='M0 70V48Q65 28 130 46T260 48V70Z' fill='%23628c3c'/><g fill='%232f8f4a'><ellipse cx='48' cy='34' rx='5' ry='8'/><ellipse cx='40' cy='26' rx='4' ry='6' transform='rotate(-30 40 26)'/><ellipse cx='57' cy='25' rx='4' ry='6' transform='rotate(30 57 25)'/></g><g fill='%23d0344a'><circle cx='38' cy='20' r='1.7'/><circle cx='58' cy='19' r='1.7'/><circle cx='48' cy='26' r='1.5'/></g><path d='M190 56L180 40L187 50L190 36L193 50L200 40Z' fill='%2377b3a6'/><path d='M190 56L184 44L189 51L190 42L191 51L196 44Z' fill='%2355978c'/></svg>");
+  animation: rev-medio 24s linear infinite;
+}
+
+/* Casitas, burrito, gallinas, cactus y postes */
+#contador-revolucion .rev-capa.cerca {
+  bottom: 14px;
+  height: 56px;
+  background-size: 420px 56px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='56' viewBox='0 0 420 56'><rect x='30' y='30' width='46' height='22' fill='%23e3b27a'/><polygon points='26,31 53,14 80,31' fill='%23b8432d'/><rect x='48' y='38' width='11' height='14' rx='5' fill='%236b3a1f'/><rect x='35' y='35' width='8' height='8' fill='%2368a8c4'/><rect x='64' y='35' width='7' height='8' fill='%2368a8c4'/><rect x='109' y='14' width='3' height='38' fill='%236b4a2c'/><rect x='102' y='18' width='17' height='2.5' fill='%236b4a2c'/><ellipse cx='158' cy='42' rx='10' ry='6' fill='%238b7a6b'/><ellipse cx='171' cy='36' rx='4' ry='3.5' fill='%238b7a6b'/><ellipse cx='170' cy='30' rx='1.4' ry='3.5' fill='%238b7a6b'/><ellipse cx='173' cy='30.5' rx='1.4' ry='3.5' fill='%236e5f52'/><rect x='150' y='46' width='2' height='6' fill='%236e5f52'/><rect x='155' y='46' width='2' height='6' fill='%236e5f52'/><rect x='161' y='46' width='2' height='6' fill='%236e5f52'/><rect x='166' y='46' width='2' height='6' fill='%236e5f52'/><rect x='149' y='34' width='18' height='6' rx='2' fill='%23ce3434'/><rect x='149' y='36' width='18' height='1.5' fill='%23ffffff'/><rect x='222' y='32' width='42' height='20' fill='%2352a0b8'/><rect x='219' y='28' width='48' height='5' fill='%23c9322d'/><rect x='236' y='38' width='10' height='14' fill='%23f2c14e'/><rect x='252' y='37' width='7' height='8' fill='%23fff3c4'/><ellipse cx='332' cy='46' rx='5' ry='4' fill='%23c0602f'/><circle cx='337' cy='41' r='2.4' fill='%23c0602f'/><circle cx='337' cy='38.5' r='1.2' fill='%23d0344a'/><polygon points='339,41 342,42 339,43' fill='%23f2c14e'/><rect x='331' y='49' width='1' height='3' fill='%23f2c14e'/><rect x='334' y='49' width='1' height='3' fill='%23f2c14e'/><ellipse cx='352' cy='47' rx='4' ry='3.2' fill='%23f5eee0'/><circle cx='356' cy='43' r='2' fill='%23f5eee0'/><circle cx='356' cy='41' r='1' fill='%23d0344a'/><polygon points='358,43 360.5,43.6 358,44.2' fill='%23f2c14e'/><rect x='351' y='50' width='1' height='2' fill='%23f2c14e'/><rect x='388' y='28' width='6' height='24' rx='3' fill='%232e8a4a'/><rect x='380' y='34' width='4' height='10' rx='2' fill='%232e8a4a'/><rect x='380' y='42' width='10' height='4' fill='%232e8a4a'/><rect x='398' y='30' width='4' height='10' rx='2' fill='%232e8a4a'/><rect x='392' y='38' width='8' height='4' fill='%232e8a4a'/></svg>");
+  animation: rev-cerca 11s linear infinite;
+}
+
+@keyframes rev-lejos { from { background-position: 0 100%; } to { background-position: -300px 100%; } }
+@keyframes rev-medio { from { background-position: 0 100%; } to { background-position: -260px 100%; } }
+@keyframes rev-cerca { from { background-position: 0 100%; } to { background-position: -420px 100%; } }
+@keyframes rev-nube { from { left: 105%; } to { left: -30%; } }
+@keyframes rev-sol { to { box-shadow: 0 0 20px 9px rgba(255,214,102,.85); } }
+
+/* ---- Vía y barra de avance brillosa ---- */
+#contador-revolucion .rev-via {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: 9px;
+  height: 8px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 20px;
+  background: rgba(10,20,40,.6);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.35), 0 0 8px rgba(255,215,100,.25);
+}
+
+#contador-revolucion .rev-via::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: .35;
+  background: repeating-linear-gradient(90deg, transparent 0 17px, rgba(255,255,255,.75) 17px 20px);
+}
+
+#contador-revolucion .rev-via-progreso {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0%;
+  overflow: hidden;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #159447, #7be39a, #ffffff, #ff8a80, #ce3434, #ffd966, #159447);
+  background-size: 200% 100%;
+  box-shadow: 0 0 8px 2px rgba(255,214,102,.85), 0 0 18px 3px rgba(21,200,100,.55);
+  transition: width .85s linear;
+  animation: rev-flujo 3s linear infinite;
+}
+
+/* Reflejo brillante superior */
+#contador-revolucion .rev-via-progreso::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 45%;
+  background: rgba(255,255,255,.55);
+}
+
+/* Destello que recorre la barra */
+#contador-revolucion .rev-via-progreso::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -40%;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.95), transparent);
+  animation: rev-barrido 2s ease-in-out infinite;
+}
+
+@keyframes rev-flujo { to { background-position: 200% 0; } }
+@keyframes rev-barrido { 0% { left: -40%; } 60%, 100% { left: 110%; } }
+
+/* ---- Tren ---- */
+#contador-revolucion .rev-tren {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  bottom: 16px;
+  font-size: 9px;
+  width: 17.4em;
+  height: 5.8em;
+  display: flex;
+  align-items: flex-end;
+  gap: .2em;
+  transform: translateX(0);
+  transition: transform .85s linear;
+  will-change: transform;
+  filter: drop-shadow(0 .4em .3em rgba(0,0,0,.4));
+}
+
+/* Vagones */
+#contador-revolucion .rev-vagon {
+  position: relative;
+  flex: 0 0 3.4em;
+  height: 2.6em;
+  margin-bottom: .9em;
+  box-sizing: border-box;
+  border: 1px solid #2a1a10;
+  border-top: .3em solid #2a1a10;
+  border-radius: .2em .2em .1em .1em;
+  background: linear-gradient(180deg, #4b7a50, #2d5233);
+  box-shadow: inset 0 -.25em 0 #d9b65e;
+}
+
+#contador-revolucion .rev-vagon::before {
+  content: "";
+  position: absolute;
+  left: .3em;
+  right: .3em;
+  top: .3em;
+  height: .8em;
+  background: repeating-linear-gradient(90deg, #9fd8e8 0 .55em, transparent .55em .85em);
+}
+
+#contador-revolucion .rev-vagon::after {
+  content: "";
+  position: absolute;
+  left: .3em;
+  bottom: -.6em;
+  width: 2.8em;
+  height: .8em;
+  background:
+    radial-gradient(circle .4em at .4em 50%, #17243a 0 .2em, #d9b65e .21em .4em, transparent .41em),
+    radial-gradient(circle .4em at 2.4em 50%, #17243a 0 .2em, #d9b65e .21em .4em, transparent .41em);
+}
+
+/* Vagón de carga (madera) con soldados */
+#contador-revolucion .rev-vagon.v2 {
+  background:
+    repeating-linear-gradient(90deg, rgba(0,0,0,.2) 0 1px, transparent 1px .45em),
+    linear-gradient(180deg, #a65a2e, #6e3818);
+}
+
+#contador-revolucion .rev-vagon.v2::before {
+  left: .9em;
+  right: auto;
+  top: .35em;
+  width: 1.6em;
+  height: 1.4em;
+  border: 1px solid #d9b65e;
+  background: rgba(0,0,0,.25);
+}
+
+/* Ténder con leña */
+#contador-revolucion .rev-vagon.v3 {
+  flex: 0 0 2.8em;
+  height: 2.2em;
+  background: linear-gradient(180deg, #222a35, #0d1117);
+}
+
+#contador-revolucion .rev-vagon.v3::before {
+  left: .2em;
+  right: .2em;
+  top: auto;
+  bottom: 100%;
+  height: .7em;
+  margin-bottom: .3em;
+  background: radial-gradient(circle at .35em .6em, #b97a3e 0 .26em, #5d3515 .28em .33em, transparent .34em) 0 0 / .7em .7em repeat-x;
+}
+
+#contador-revolucion .rev-vagon.v3::after {
+  left: .2em;
+  width: 2.4em;
+  background:
+    radial-gradient(circle .4em at .4em 50%, #17243a 0 .2em, #d9b65e .21em .4em, transparent .41em),
+    radial-gradient(circle .4em at 2em 50%, #17243a 0 .2em, #d9b65e .21em .4em, transparent .41em);
+}
+
+/* Soldados con sombrero */
+#contador-revolucion .rev-soldado {
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: .3em;
+  left: .7em;
+  width: .6em;
+  height: 1em;
+  border-radius: .2em .2em 0 0;
+  background:
+    radial-gradient(circle at 50% 0, #9a6a45 .3em, transparent .31em),
+    linear-gradient(#efe3c0, #efe3c0);
+}
+
+#contador-revolucion .rev-soldado.s2 {
+  left: 1.9em;
+  height: .9em;
+}
+
+#contador-revolucion .rev-soldado::before {
+  content: "";
+  position: absolute;
+  left: -.35em;
+  top: -.2em;
+  width: 1.3em;
+  height: .2em;
+  border-radius: 50%;
+  background: #e4cc88;
+}
+
+#contador-revolucion .rev-soldado::after {
+  content: "";
+  position: absolute;
+  left: .05em;
+  top: -.5em;
+  width: .5em;
+  height: .35em;
+  border-radius: 50% 50% 0 0;
+  background: #e4cc88;
+}
+
+/* Locomotora de vapor */
+#contador-revolucion .rev-locomotora {
+  position: relative;
+  flex: 0 0 6.9em;
+  height: 5.6em;
+}
+
+#contador-revolucion .rev-cabina {
+  position: absolute;
+  left: 0;
+  bottom: 1.4em;
+  box-sizing: border-box;
+  width: 2.5em;
+  height: 3.6em;
+  border: 1px solid #e0b95a;
+  border-top: .3em solid #2a1a10;
+  border-radius: .3em .3em 0 0;
+  background: linear-gradient(135deg, #8a4a24, #5a2f16);
+}
+
+#contador-revolucion .rev-cabina::before {
+  content: "";
+  position: absolute;
+  left: .4em;
+  top: .4em;
+  width: 1em;
+  height: 1em;
+  border: 1px solid #e0b95a;
+  border-radius: .15em;
+  background: #a9dbe8;
+}
+
+#contador-revolucion .rev-cabina::after {
+  content: "";
+  position: absolute;
+  left: -.35em;
+  top: -.55em;
+  width: 3.1em;
+  height: .25em;
+  border-radius: .2em;
+  background: #2a1a10;
+}
+
+#contador-revolucion .rev-caldera {
+  position: absolute;
+  left: 2.3em;
+  bottom: 1.8em;
+  width: 4.2em;
+  height: 2.1em;
+  border-radius: .3em 1em 1em .3em;
+  background: linear-gradient(180deg, #59636f 0, #262d37 40%, #0f141b 100%);
+  box-shadow: inset 0 .15em .2em rgba(255,255,255,.35);
+}
+
+#contador-revolucion .rev-caldera::before {
+  content: "";
+  position: absolute;
+  left: .9em;
+  top: 0;
+  bottom: 0;
+  width: .22em;
+  background: #d9b65e;
+  box-shadow: 1.4em 0 0 #d9b65e;
+}
+
+#contador-revolucion .rev-chimenea {
+  position: absolute;
+  z-index: 3;
+  left: 4.9em;
+  bottom: 3.85em;
+  width: .8em;
+  height: 1.1em;
+  background: linear-gradient(90deg, #2b323d, #0b0f15);
+}
+
+#contador-revolucion .rev-chimenea::before {
+  content: "";
+  position: absolute;
+  left: -.45em;
+  top: -.8em;
+  width: 1.7em;
+  height: .9em;
+  clip-path: polygon(25% 100%, 75% 100%, 100% 0, 0 0);
+  background: linear-gradient(#3a4452, #141a22);
+}
+
+#contador-revolucion .rev-chimenea::after {
+  content: "";
+  position: absolute;
+  left: -.45em;
+  top: -.9em;
+  width: 1.7em;
+  height: .15em;
+  border-radius: .1em;
+  background: #d9b65e;
+}
+
+#contador-revolucion .rev-domo {
+  position: absolute;
+  left: 3.4em;
+  bottom: 3.85em;
+  width: .9em;
+  height: .55em;
+  border-radius: 50% 50% 0 0;
+  background: linear-gradient(#ffe28a, #b88a20);
+}
+
+#contador-revolucion .rev-frente {
+  position: absolute;
+  left: 6.2em;
+  bottom: .55em;
+  width: 1.2em;
+  height: .95em;
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+  background: repeating-linear-gradient(60deg, #c9322d 0 .2em, #7a1a17 .2em .4em);
+}
+
+#contador-revolucion .rev-faro {
+  position: absolute;
+  z-index: 2;
+  left: 5.95em;
+  bottom: 3.9em;
+  width: .7em;
+  height: .7em;
+  border-radius: .15em;
+  background: #fff3b0;
+  box-shadow: 0 0 .9em .4em rgba(255,220,115,.75);
+}
+
+#contador-revolucion .rev-faro::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  width: 5em;
+  height: 1.6em;
+  transform: translateY(-50%);
+  clip-path: polygon(0 35%, 100% 0, 100% 100%, 0 65%);
+  background: linear-gradient(90deg, rgba(255,240,170,.55), transparent);
+}
+
+#contador-revolucion .rev-parachoques {
+  position: absolute;
+  left: 2.3em;
+  bottom: 1.55em;
+  width: 4.3em;
+  height: .25em;
+  border-radius: .15em;
+  background: #d9b65e;
+}
+
+/* Banderín tricolor sobre la cabina */
+#contador-revolucion .rev-banderin {
+  position: absolute;
+  left: 1.1em;
+  bottom: 5.4em;
+  width: 1px;
+  height: 1.5em;
+  background: #eee;
+}
+
+#contador-revolucion .rev-banderin::before {
+  content: "";
+  position: absolute;
+  left: 1px;
+  top: 0;
+  width: 1.1em;
+  height: .7em;
+  transform-origin: left center;
+  background: linear-gradient(90deg, #159447 33%, #fff 33% 66%, #ce3434 66%);
+  animation: rev-ondea .6s ease-in-out infinite alternate;
+}
+
+@keyframes rev-ondea {
+  from { transform: skewY(-8deg) scaleX(.9); }
+  to { transform: skewY(8deg) scaleX(1); }
+}
+
+/* Ruedas y biela */
+#contador-revolucion .rev-rueda {
+  position: absolute;
+  bottom: 0;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: .25em solid #14181f;
+  background: repeating-conic-gradient(#d9b65e 0 10deg, #1a1f27 10deg 45deg);
+  animation: rev-ruedas .8s linear infinite;
+}
+
+#contador-revolucion .rev-rueda.r1 { left: 1.7em; width: 2.3em; height: 2.3em; }
+#contador-revolucion .rev-rueda.r2 { left: 3.8em; width: 2.3em; height: 2.3em; }
+#contador-revolucion .rev-rueda.r3 { left: 6em; width: 1.1em; height: 1.1em; border-width: .18em; }
+
+#contador-revolucion .rev-biela {
+  position: absolute;
+  left: 2.85em;
+  bottom: 1.05em;
+  width: 2.1em;
+  height: .22em;
+  border-radius: .1em;
+  background: #e6c76a;
+  animation: rev-biela .8s linear infinite;
+}
+
+@keyframes rev-ruedas { to { transform: rotate(360deg); } }
+
+@keyframes rev-biela {
+  0% { transform: translate(.6em, 0); }
+  25% { transform: translate(0, .6em); }
+  50% { transform: translate(-.6em, 0); }
+  75% { transform: translate(0, -.6em); }
+  100% { transform: translate(.6em, 0); }
+}
+
+/* Humo que queda hacia atrás */
+#contador-revolucion .rev-humo {
+  position: absolute;
+  z-index: 4;
+  left: 5.1em;
+  bottom: 5em;
+  width: 1em;
+  height: 1em;
+  pointer-events: none;
+}
+
+#contador-revolucion .rev-humo i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.95), rgba(215,222,232,.65) 60%, rgba(215,222,232,0));
+  opacity: 0;
+  animation: rev-humo-atras 2.4s ease-out infinite;
+}
+
+#contador-revolucion .rev-humo i:nth-child(2) { animation-delay: .48s; }
+#contador-revolucion .rev-humo i:nth-child(3) { animation-delay: .96s; }
+#contador-revolucion .rev-humo i:nth-child(4) { animation-delay: 1.44s; }
+#contador-revolucion .rev-humo i:nth-child(5) { animation-delay: 1.92s; }
+
+@keyframes rev-humo-atras {
+  0% { transform: translate(0, 0) scale(.5); opacity: 0; }
+  15% { opacity: .9; }
+  100% { transform: translate(-9em, -2.8em) scale(2.8); opacity: 0; }
+}
+
+/* ============ TRICOLOR CON DESTELLOS ============ */
+
+#contador-revolucion .rev-bandera {
+  position: relative;
+  display: flex;
+  gap: 5px;
+  height: 6px;
+  margin: 5px 0 13px;
+}
+
+#contador-revolucion .rev-bandera span {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+#contador-revolucion .rev-bandera span:nth-child(1) {
+  background: linear-gradient(180deg, #3ddc84, #159447);
+  box-shadow: 0 0 9px 1px rgba(21,200,100,.85);
+}
+
+#contador-revolucion .rev-bandera span:nth-child(2) {
+  background: linear-gradient(180deg, #fff, #d8dde6);
+  box-shadow: 0 0 9px 1px rgba(255,255,255,.85);
+}
+
+#contador-revolucion .rev-bandera span:nth-child(3) {
+  background: linear-gradient(180deg, #ff6b6b, #ce3434);
+  box-shadow: 0 0 9px 1px rgba(255,80,80,.85);
+}
+
+#contador-revolucion .rev-bandera span::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -50%;
+  width: 50%;
+  background: linear-gradient(90deg, transparent, rgba(255,226,120,.95), transparent);
+  animation: rev-barrido 2.2s ease-in-out infinite;
+}
+
+#contador-revolucion .rev-bandera span:nth-child(2)::after { animation-delay: .35s; }
+#contador-revolucion .rev-bandera span:nth-child(3)::after { animation-delay: .7s; }
+
+#contador-revolucion .rev-bandera::before,
+#contador-revolucion .rev-bandera::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 18%;
+  width: 10px;
+  height: 10px;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  background: #fff;
+  opacity: 0;
+  animation: rev-destello 1.8s ease-in-out infinite;
+}
+
+#contador-revolucion .rev-bandera::after {
+  left: 72%;
+  animation-delay: .9s;
+}
+
+@keyframes rev-destello {
+  0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1) rotate(90deg); opacity: 1; }
+}
+
+/* ============ TARJETAS NEÓN ============ */
+
+#contador-revolucion .rev-reloj {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 8px;
+}
+
+#contador-revolucion .rev-tiempo {
+  position: relative;
+  min-width: 0;
+  padding: 10px 3px 9px;
+  border-radius: 11px;
+  background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.05));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 5px 14px rgba(0,0,0,.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Borde neón giratorio y su resplandor */
+#contador-revolucion .rev-tiempo::before,
+#contador-revolucion .rev-tiempo::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 2px;
+  border-radius: 12px;
+  pointer-events: none;
+  background: conic-gradient(from var(--rev-ang), #159447, #ffe28a, #ce3434, #ffffff, #159447);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: rev-giro 4s linear infinite;
+}
+
+#contador-revolucion .rev-tiempo::after {
+  padding: 3px;
+  filter: blur(5px);
+  opacity: .9;
+}
+
+#contador-revolucion .rev-tiempo:nth-child(2)::before,
+#contador-revolucion .rev-tiempo:nth-child(2)::after { animation-delay: -1s; }
+#contador-revolucion .rev-tiempo:nth-child(3)::before,
+#contador-revolucion .rev-tiempo:nth-child(3)::after { animation-delay: -2s; }
+#contador-revolucion .rev-tiempo:nth-child(4)::before,
+#contador-revolucion .rev-tiempo:nth-child(4)::after { animation-delay: -3s; }
+
+@keyframes rev-giro { to { --rev-ang: 360deg; } }
+
+#contador-revolucion .rev-tiempo strong {
+  position: relative;
+  z-index: 1;
+  display: block;
+  color: #fff8dc;
+  font-size: clamp(22px, 5vw, 30px);
+  line-height: 1.15;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 10px rgba(255,226,138,.85);
+}
+
+#contador-revolucion .rev-tiempo small {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 5px;
+  color: #dce8f7;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .65px;
+}
+
+#contador-revolucion .rev-pie {
+  margin: 12px 0 0;
+  color: var(--rev-gold);
+  font-size: 10px;
+  line-height: 1.35;
+  font-weight: 800;
+  letter-spacing: .85px;
+  text-shadow: 0 0 8px rgba(212,175,55,.6);
+}
+
+#contador-revolucion .rev-finalizado {
+  margin: 10px 0 0;
+  color: #fff2b0;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@media (max-width: 380px) {
+  #contador-revolucion { padding: 11px 10px 10px; }
+  #contador-revolucion .rev-reloj { gap: 5px; }
+  #contador-revolucion .rev-tiempo { padding: 9px 2px; }
+  #contador-revolucion .rev-tren { font-size: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #contador-revolucion .rev-tren,
+  #contador-revolucion .rev-via-progreso { transition: none; }
+  #contador-revolucion *,
+  #contador-revolucion *::before,
+  #contador-revolucion *::after { animation: none !important; }
+}
