@@ -329,6 +329,7 @@
   /* ---------- Enganche a la página actual ---------- */
   (function(){
     var P = window.Perfil; if (!P) return;
+    try{ if (localStorage.getItem('ra_fx_off') === '1') return; }catch(e){}
     function norm(s){ return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim(); }
     function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     /* Avatares del alumno */
@@ -370,7 +371,8 @@ function avatar(d){
       card.querySelector('#btnAvatar').addEventListener('click', function(){ P.reabrir(); });
       return card.querySelector('#fxAvatarImg');
     }
-    function entrar(){
+    function entrar(){ try{ entrar2(); }catch(e){ if (window.console) console.error('autorizacion-foto:', e); } }
+    function entrar2(){
       var sel = document.getElementById('alumno'); if (!sel || !sel.value) return;
       var id = sel.value, nombre = nombreDe(sel), cont = contenedor(); if (!cont) return;
       var d = { nombre: nombre };
@@ -384,36 +386,51 @@ function avatar(d){
     }
     var ultimo = false;
     setInterval(function(){
-      var p = document.getElementById('privado');
-      var vis = !!p && !p.hidden && p.offsetParent !== null;
-      if (vis && !ultimo) entrar();
-      ultimo = vis;
-    }, 400);
+      try{
+        var p = document.getElementById('privado');
+        var vis = !!p && !p.hidden && p.getClientRects().length > 0;
+        if (vis && !ultimo){ ultimo = true; entrar(); setTimeout(limpiarViejo, 400); }
+        else if (!vis) ultimo = false;
+      }catch(e){}
+    }, 700);
 
-    /* Quita el botón y la ventana viejos de "Perfil familiar" / "Elegir imagen" */
+    /* Quita el botón y la ventana viejos de "Perfil familiar" / "Elegir imagen" (con protecciones) */
     function raizFija(el){
       for (var n = el; n && n !== document.body; n = n.parentElement){
         if (getComputedStyle(n).position === 'fixed') return n;
       }
       return null;
     }
-    function ocultar(el){ var r = raizFija(el) || el.closest('button,a') || el; r.dataset.fxOff = '1'; r.style.setProperty('display', 'none', 'important'); }
-    function limpiarViejo(){
-      document.querySelectorAll('button,a,div,span,h1,h2,h3').forEach(function(el){
-        if (el.dataset.fxOff || el.children.length > 3) return;
-        if (el.closest('#perfilModal,#fxCard,.nav-aviso')) return;
-        var t = (el.textContent || '').replace(/\s+/g, ' ').trim();
-        if (t.length < 46 && /perfil familiar/i.test(t)) ocultar(el);
-      });
-      document.querySelectorAll('button').forEach(function(b){
-        if (b.closest('#perfilModal') || b.dataset.fxOff) return;
-        if (/elegir imagen/i.test(b.textContent)) ocultar(b);
-      });
+    function protegido(r){
+      if (!r || r === document.body || r === document.documentElement) return true;
+      if (/^(privado|perfilModal|fxCard|puerta|visor)$/.test(r.id)) return true;
+      var priv = document.getElementById('privado');
+      if (priv && r.contains(priv)) return true;
+      return !!r.querySelector('#privado,#formAcceso,#alumno,#fecha2,#perfilModal,#puerta,main,header,footer');
     }
-    var tl = null;
-    new MutationObserver(function(){ if (!tl) tl = setTimeout(function(){ tl = null; limpiarViejo(); }, 300); })
-      .observe(document.body, { childList: true, subtree: true });
+    function ocultar(el){
+      var r = raizFija(el) || el.closest('button,a');
+      if (!r || protegido(r)) return;
+      r.dataset.fxOff = '1';
+      r.style.setProperty('display', 'none', 'important');
+    }
+    function limpiarViejo(){
+      try{
+        document.querySelectorAll('button,a,div,span,h1,h2,h3').forEach(function(el){
+          if (el.dataset.fxOff || el.children.length > 3) return;
+          if (el.closest('#perfilModal,#fxCard,.nav-aviso')) return;
+          var t = (el.textContent || '').replace(/\s+/g, ' ').trim();
+          if (t.length < 46 && /perfil familiar/i.test(t)) ocultar(el);
+        });
+        document.querySelectorAll('button').forEach(function(b){
+          if (b.dataset.fxOff || b.closest('#perfilModal')) return;
+          if (/elegir imagen/i.test(b.textContent)) ocultar(b);
+        });
+      }catch(e){}
+    }
     limpiarViejo();
+    [800, 2500, 6000].forEach(function(t){ setTimeout(limpiarViejo, t); });
+    setInterval(limpiarViejo, 4000);
   })();
 
 })();
