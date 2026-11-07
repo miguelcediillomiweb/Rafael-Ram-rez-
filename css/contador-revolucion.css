@@ -36,6 +36,52 @@
   background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,.12) 48%, transparent 70%);
 }
 
+/* Paisaje panorámico en movimiento detrás del tren */
+#contador-revolucion .rev-paisaje {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  opacity: .92;
+  background:
+    linear-gradient(to top, rgba(5,17,36,.18) 0 22%, transparent 22%),
+    radial-gradient(ellipse at 13% 73%, #477d70 0 12%, transparent 12.5%),
+    radial-gradient(ellipse at 42% 82%, #315f5c 0 20%, transparent 20.5%),
+    radial-gradient(ellipse at 78% 77%, #477d70 0 17%, transparent 17.5%),
+    linear-gradient(155deg, transparent 0 43%, rgba(103,145,137,.8) 43.5% 58%, transparent 58.5%),
+    linear-gradient(25deg, transparent 0 42%, rgba(54,101,94,.95) 42.5% 63%, transparent 63.5%);
+  background-size: 100% 100%, 240px 100%, 290px 100%, 260px 100%, 330px 100%, 390px 100%;
+  background-position: 0 0, 0 0, 90px 0, 190px 0, 0 0, 130px 0;
+  animation: rev-paisaje-avanza 8s linear infinite;
+}
+#contador-revolucion .rev-paisaje::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .7;
+  background:
+    linear-gradient(to top, #142f3b 0 18%, transparent 18%),
+    repeating-linear-gradient(90deg, transparent 0 54px, #1c5149 54px 59px, transparent 59px 105px);
+  clip-path: polygon(0 65%, 8% 53%, 14% 67%, 22% 47%, 29% 67%, 38% 55%, 45% 70%, 55% 49%, 64% 68%, 73% 51%, 82% 67%, 91% 48%, 100% 65%, 100% 100%, 0 100%);
+}
+#contador-revolucion .rev-paisaje::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 12%;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffe8a0 0 30%, rgba(255,211,112,.28) 70%, transparent 72%);
+  box-shadow: 0 0 18px rgba(255,218,137,.28);
+}
+@keyframes rev-paisaje-avanza {
+  from { background-position: 0 0, 0 0, 90px 0, 190px 0, 0 0, 130px 0; }
+  to { background-position: 0 0, -240px 0, -200px 0, -70px 0, -330px 0, -260px 0; }
+}
+#contador-revolucion .rev-tren { z-index: 2; }
+#contador-revolucion .rev-via { z-index: 1; }
+
 /* Vía, paisaje y tren: tarjeta compacta sin encabezado adicional */
 #contador-revolucion .rev-tren-zona {
   --rev-tren-ancho: 116px;
