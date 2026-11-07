@@ -130,7 +130,10 @@ async function cargar(){
       const botonInvitacion = enlaceInvitacion
         ? '<button class="btn invitacion-btn destacado-ver" type="button" data-popup-url="' + esc(seguro(enlaceInvitacion)) + '" data-popup-title="Invitación · ' + esc(c.evento || 'Evento escolar') + '">🎬 Invitación <span aria-hidden="true">✨</span></button>'
         : '';
-      const contador = fechaContador
+      // El evento de la Revolución Mexicana usa el contador visual dedicado del portal.
+      // Se conserva el contador automático para todos los demás eventos.
+      const esRevolucion = norm(c.evento || '').includes('revolucion');
+      const contador = fechaContador && !esRevolucion
         ? '<div class="cuenta-regresiva" data-fecha-evento="' + esc(fechaContador) + '" aria-live="off"><strong>Cuenta regresiva</strong><div class="contador-unidades"><span><b data-unidad="dias">0</b><small>Días</small></span><span><b data-unidad="horas">00</b><small>Horas</small></span><span><b data-unidad="minutos">00</b><small>Minutos</small></span><span><b data-unidad="segundos">00</b><small>Segundos</small></span></div><p class="contador-finalizado"></p></div>'
         : '';
       return '<div class="item evento"><div class="ico emo">' + esc(c.icono || '📚') + '</div><div class="evento-contenido"><h3>' + esc(c.evento) + '</h3>' +
