@@ -9,8 +9,8 @@
   --rev-red: #CE3434;
   width: 100%;
   max-width: 560px;
-  margin: 16px auto 4px;
-  padding: 19px 16px 16px;
+  margin: 12px auto 3px;
+  padding: 12px 14px 12px;
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -36,30 +36,22 @@
   background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,.12) 48%, transparent 70%);
 }
 
-#contador-revolucion .rev-titulo {
-  margin: 0 0 12px;
-  color: #fff;
-  font-family: inherit;
-  font-size: clamp(19px, 4vw, 25px);
-  font-weight: 800;
-  line-height: 1.2;
-  letter-spacing: .1px;
-}
-
-/* Vía, progreso y tren */
+/* Vía, paisaje y tren: tarjeta compacta sin encabezado adicional */
 #contador-revolucion .rev-tren-zona {
   --rev-tren-ancho: 116px;
   position: relative;
-  height: 76px;
-  margin: 0 2px 8px;
+  height: 68px;
+  margin: 0 2px 6px;
+  overflow: hidden;
+  border-radius: 9px;
 }
 
 #contador-revolucion .rev-via {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 12px;
-  height: 9px;
+  bottom: 9px;
+  height: 8px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,.24);
   border-radius: 20px;
@@ -88,7 +80,7 @@
 #contador-revolucion .rev-tren {
   position: absolute;
   left: 0;
-  bottom: 20px;
+  bottom: 16px;
   width: var(--rev-tren-ancho);
   height: 48px;
   display: flex;
@@ -295,7 +287,7 @@
   display: flex;
   gap: 5px;
   height: 5px;
-  margin: 4px 0 17px;
+  margin: 3px 0 12px;
 }
 
 #contador-revolucion .rev-bandera span {
@@ -343,7 +335,7 @@
 }
 
 #contador-revolucion .rev-pie {
-  margin: 15px 0 0;
+  margin: 11px 0 0;
   color: var(--rev-gold);
   font-size: 10px;
   line-height: 1.35;
@@ -359,7 +351,7 @@
 }
 
 @media (max-width: 380px) {
-  #contador-revolucion { padding: 16px 11px 14px; }
+  #contador-revolucion { padding: 11px 10px 10px; }
   #contador-revolucion .rev-reloj { gap: 5px; }
   #contador-revolucion .rev-tiempo { padding: 9px 2px; }
   #contador-revolucion .rev-tren-zona { --rev-tren-ancho: 108px; }
