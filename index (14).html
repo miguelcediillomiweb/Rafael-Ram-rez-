@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Escuela Primaria Rafael Ramírez</title>
+<meta name="theme-color" content="#14306b">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;800&family=Schoolbell&display=swap" rel="stylesheet">
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<link rel="stylesheet" href="css/estilos.css?v=final-20261029-3">
+<link rel="stylesheet" href="css/botones.css?v=20261106-1">
+<link rel="stylesheet" href="css/autorizacion.css?v=20261105-10">
+<link rel="stylesheet" href="css/ambiente.css?v=1">
+</head>
+<body>
+<div class="estrellas" aria-hidden="true"><div id="stars"></div><div id="stars2"></div><div id="stars3"></div></div>
+
+<!-- Pantalla de carga -->
+<div id="cargando" role="status" aria-live="polite">
+  <div class="cg-rueda">
+    <div class="wheel-and-hamster" role="img" aria-label="Hámster corriendo en una rueda">
+      <div class="hm-wheel"></div>
+      <div class="hamster"><div class="hamster__body"><div class="hamster__head"><div class="hamster__ear"></div><div class="hamster__eye"></div><div class="hamster__nose"></div></div><div class="hamster__limb hamster__limb--fr"></div><div class="hamster__limb hamster__limb--fl"></div><div class="hamster__limb hamster__limb--br"></div><div class="hamster__limb hamster__limb--bl"></div><div class="hamster__tail"></div></div></div>
+      <div class="hm-spoke"></div>
+    </div>
+  </div>
+  <p class="cg-titulo">Preparando tu escuela<span class="cg-puntos"></span></p>
+  <p class="cg-sub">Cargando avisos y datos de los alumnos</p>
+</div>
+
+<canvas id="luces" aria-hidden="true"></canvas>
+
+<!-- Puerta del salón -->
+<div id="puerta" role="dialog" aria-label="Entrada a la escuela">
+  <div class="hoja izq"><div class="panel vent"></div><div class="panel p1"></div><div class="panel p2"></div><div class="manija"></div></div>
+  <div class="hoja der"><div class="panel vent"></div><div class="panel p1"></div><div class="panel p2"></div><div class="manija"></div></div>
+  <div class="placa">
+    <img src="logo.png" alt="Escudo de la escuela">
+    <h1>Escuela Rafael Ramírez</h1>
+    <small><span class="emo">📚</span> Espacio educativo <span class="emo w">✏️</span></small>
+  </div>
+  <button id="btnPuerta" type="button"><span class="emo w">👆</span> Toca aquí para entrar a este espacio educativo <span class="emo">🚪</span></button>
+</div>
+
+<header class="banner">
+  <div class="flota" aria-hidden="true"><span>📚</span><span>✏️</span><span>🎒</span><span>🍎</span><span>🔔</span><span>⭐</span><span>📐</span><span>🎨</span><span>🔬</span></div>
+  <img src="logo.png" alt="Escudo de la Escuela Primaria Rafael Ramírez">
+  <h1>Escuela Primaria Rafael Ramírez</h1>
+  <p class="cct">Clave de trabajo: CCT15DPR082X</p>
+</header>
+
+<div class="saludo" aria-live="off">
+  <h2><span class="emo p" id="saludoEmo">👋</span> <span id="saludoTxt">¡Hola!</span></h2>
+  <p class="fecha" id="fecha"></p>
+  <p class="hora"><span class="emo w">🕐</span> <span id="horaTxt"></span></p>
+</div>
+
+<main>
+  <section id="avisos" class="reveal">
+    <h2><span class="emo w">📢</span> Avisos</h2>
+    <div class="notif" id="notif">
+      <strong><span class="emo p">🔔</span> Recibe los avisos en tu celular</strong>
+      <button class="btn" id="btnNotif" type="button" hidden>Activar notificaciones</button>
+      <p class="nota" id="msgNotif">Preparando notificaciones…</p>
+    </div>
+    <div class="pizarron"><div id="avisosLista"><p class="gis-vacio">Cargando avisos…</p></div></div>
+  </section>
+
+  <section id="calendario" class="reveal">
+    <h2><span class="emo">📅</span> Próximas actividades escolares</h2>
+    <div id="calLista"><p class="vacio">Cargando actividades…</p></div>
+  </section>
+
+  <section id="destacados" class="reveal">
+    <h2><span class="emo g">⭐</span> Lo más relevante del mes</h2>
+    <div class="dest" id="destLista"><p class="vacio">Cargando…</p></div>
+  </section>
+
+  <section id="cumples" class="reveal">
+    <div class="cumple">
+      <div class="globos" aria-hidden="true"><span>🎈</span><span>🎈</span><span>🎈</span><span>🎈</span><span>🎈</span><span>🎈</span></div>
+      <div class="velas" aria-hidden="true"><span>🕯️</span><span>🕯️</span><span>🕯️</span><span>🕯️</span><span>🕯️</span></div>
+      <h2><span class="emo">🎂</span> Este mes cumpleaños</h2>
+      <div id="cumpLista" class="cumples"><span class="chip">Cargando…</span></div>
+      <p class="felicidades" id="felicidades" hidden>🎉 ¡Muchas felicidades! 🎉</p>
+    </div>
+  </section>
+
+  <section id="aulas" class="reveal">
+    <h2><span class="emo w">✏️</span> Llena los datos y ve las actividades realizadas por tu hijo(a)</h2>
+    <form id="formAcceso" autocomplete="off">
+      <label for="alumno">🧒 Alumno(a)</label>
+      <div class="campo-glow"><select id="alumno" required><option value="">Cargando…</option></select></div>
+      <label for="fecha2">🎂 Fecha de nacimiento (DD/MM/AAAA)</label>
+      <div class="campo-glow"><input type="text" id="fecha2" inputmode="numeric" placeholder="15/03/2016" maxlength="10" required></div>
+      <button class="btn" type="submit" id="btnEntrar">📚 Entrar</button>
+      <p class="msg" id="msgAcceso" role="status"></p>
+    </form>
+
+    <div id="privado" hidden>
+      <h3 id="tituloAula"></h3>
+      <p class="bienvenida"><span class="emo p">💖</span> Disfruta de las actividades realizadas por tu hijo/hija</p>
+      <div class="grid" id="carpetas"></div>
+      <h3 class="sub" id="galTit"><span class="emo">📸</span> Galería de fotos</h3>
+      <div class="grid" id="galeria"></div>
+      <button class="btn sec" id="btnSalir" type="button">👋 Salir</button>
+    </div>
+  </section>
+
+  <section id="contacto" class="reveal">
+    <h2><span class="emo w">💬</span> Contacto</h2>
+    <p class="vacio">Usa este botón solo para asuntos importantes <span class="emo p">👍</span></p>
+    <button class="btn wa" id="btnWa" type="button" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><g transform="translate(6.2 6.2) scale(.5)"><path fill="#fff" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></g></svg>
+      <span class="watxt"><b><span class="emo dedo">👉</span> Da clic aquí para contactar a la maestra Betty</b></span>
+    </button>
+    <button class="btn salir-web" id="btnSalirWeb" type="button">
+      <span aria-hidden="true">🚪</span> Salir de la web <span class="luz-recorrido" aria-hidden="true"></span>
+    </button>
+  </section>
+</main>
+
+<section id="pantallaDespedida" class="despedida" hidden role="dialog" aria-modal="true" aria-labelledby="despedidaTitulo">
+  <div class="despedida-luces" id="despedidaEmojis" aria-hidden="true"></div>
+  <div class="despedida-contenido">
+    <div class="despedida-icono" aria-hidden="true">🎒✨</div>
+    <p class="despedida-etiqueta">ESCUELA PRIMARIA RAFAEL RAMÍREZ</p>
+    <h1 id="despedidaTitulo">¡Gracias por tu visita!</h1>
+    <p class="despedida-mensaje">¡Gracias por visitar el espacio de evidencias! El éxito escolar es un trabajo en equipo entre casa y escuela. Vuelve las veces que gustes para seguir de cerca los grandes pasos de tu pequeño(a). 🎒✨</p>
+    <div class="pensamiento-educativo">
+      <span class="pensamiento-comillas" aria-hidden="true">“</span>
+      <p id="pensamientoTexto"></p>
+      <small id="pensamientoAutor"></small>
+    </div>
+  </div>
+</section>
+
+<div id="visor" hidden role="dialog" aria-label="Carpeta de actividades">
+  <div class="visor-barra">
+    <button id="visorAtras" type="button"><span aria-hidden="true">✕</span> Cerrar</button>
+    <h3 id="visorTitulo"></h3>
+    <a id="visorDrive" target="_blank" rel="noopener" href="#">Drive ↗</a>
+  </div>
+  <p class="visor-ayuda">Contenido destacado · Para salir, pulsa Cerrar.</p>
+  <iframe id="visorMarco" title="Contenido de la carpeta" src="about:blank"></iframe>
+</div>
+
+<dialog id="dlgWa">
+  <h3><span class="emo w">💬</span> Contactar a la maestra Betty</h3>
+  <p class="nota">Para tu seguridad, confirma al alumno(a) con su fecha de nacimiento.</p>
+  <form id="formWa" autocomplete="off">
+    <label for="waAlumno">🧒 Alumno(a)</label>
+    <select id="waAlumno" required></select>
+    <label for="waFecha">🎂 Fecha de nacimiento (DD/MM/AAAA)</label>
+    <input type="text" id="waFecha" inputmode="numeric" placeholder="15/03/2016" maxlength="10" required>
+    <button class="btn wa" type="submit" id="btnWaIr">Abrir WhatsApp</button>
+    <button class="btn sec" type="button" id="btnWaCerrar" style="width:100%">Cancelar</button>
+    <p class="msg" id="msgWa" role="status"></p>
+  </form>
+</dialog>
+
+<footer>
+  <div class="corazones" aria-hidden="true"><span>❤️</span><span>❤️</span><span>❤️</span><span>❤️</span><span>❤️</span></div>
+  Creado y diseñado por Escuela Rafael Ramírez y profesora Beatriz Ayala Meléndez, hecho con todo el <span class="latido" aria-label="corazón">❤️</span>
+</footer>
+
+<script src="js/escuela.js?v=final-20261029-3" defer></script>
+
+
+<script src="js/autorizacion.js?v=20261105-10" defer></script>
+<script src="js/escritura.js"></script>
+<script src="js/ambiente.js?v=1" defer></script>
+</body>
+</html>
