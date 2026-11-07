@@ -1,0 +1,373 @@
+/* CONTADOR REVOLUCIÓN MEXICANA · Escuela Primaria Rafael Ramírez
+   Componente compacto para la sección Próximas actividades escolares.
+   Sin librerías externas. */
+
+#contador-revolucion {
+  --rev-navy: #0B1B3D;
+  --rev-gold: #D4AF37;
+  --rev-green: #159447;
+  --rev-red: #CE3434;
+  width: 100%;
+  max-width: 560px;
+  margin: 16px auto 4px;
+  padding: 19px 16px 16px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  box-sizing: border-box;
+  color: #fff;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 19px;
+  background:
+    radial-gradient(circle at 8% 4%, rgba(21,148,71,.28), transparent 38%),
+    radial-gradient(circle at 94% 96%, rgba(206,52,52,.25), transparent 40%),
+    linear-gradient(135deg, #08152e 0%, #10294d 54%, #17345c 100%);
+  box-shadow: 0 12px 28px rgba(11,27,61,.18), inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+#contador-revolucion::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  opacity: .22;
+  background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,.12) 48%, transparent 70%);
+}
+
+#contador-revolucion .rev-titulo {
+  margin: 0 0 12px;
+  color: #fff;
+  font-family: inherit;
+  font-size: clamp(19px, 4vw, 25px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: .1px;
+}
+
+/* Vía, progreso y tren */
+#contador-revolucion .rev-tren-zona {
+  --rev-tren-ancho: 116px;
+  position: relative;
+  height: 76px;
+  margin: 0 2px 8px;
+}
+
+#contador-revolucion .rev-via {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  height: 9px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.24);
+  border-radius: 20px;
+  background: rgba(255,255,255,.15);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.2);
+}
+
+#contador-revolucion .rev-via::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .42;
+  background: repeating-linear-gradient(90deg, transparent 0 17px, rgba(255,255,255,.75) 17px 20px);
+}
+
+#contador-revolucion .rev-via-progreso {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #159447 0%, #f4f7fa 48%, #ce3434 78%, #d4af37 100%);
+  box-shadow: 0 0 12px rgba(212,175,55,.75);
+  transition: width .85s linear;
+}
+
+#contador-revolucion .rev-tren {
+  position: absolute;
+  left: 0;
+  bottom: 20px;
+  width: var(--rev-tren-ancho);
+  height: 48px;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  transform: translateX(0);
+  transition: transform .85s linear;
+  will-change: transform;
+  filter: drop-shadow(0 4px 3px rgba(0,0,0,.35));
+}
+
+/* Locomotora */
+#contador-revolucion .rev-locomotora {
+  position: relative;
+  flex: 0 0 47px;
+  height: 39px;
+}
+
+#contador-revolucion .rev-cabina {
+  position: absolute;
+  left: 2px;
+  bottom: 12px;
+  width: 18px;
+  height: 23px;
+  border: 2px solid #e7bd50;
+  border-bottom: 0;
+  border-radius: 5px 5px 0 0;
+  background: linear-gradient(135deg, #d43c32, #8f211e);
+}
+
+#contador-revolucion .rev-cabina::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #f8e7ae;
+  border-radius: 2px;
+  background: #8bd2e7;
+}
+
+#contador-revolucion .rev-caldera {
+  position: absolute;
+  left: 17px;
+  bottom: 12px;
+  width: 27px;
+  height: 17px;
+  border: 2px solid #e7bd50;
+  border-radius: 9px 8px 4px 4px;
+  background: linear-gradient(180deg, #f2c85c, #a85a19);
+}
+
+#contador-revolucion .rev-frente {
+  position: absolute;
+  right: -2px;
+  bottom: 12px;
+  width: 7px;
+  height: 12px;
+  border-radius: 2px 5px 2px 2px;
+  background: #c9322d;
+  border: 1px solid #f4d27b;
+}
+
+#contador-revolucion .rev-chimenea {
+  position: absolute;
+  z-index: 3;
+  left: 23px;
+  bottom: 29px;
+  width: 8px;
+  height: 12px;
+  border: 1px solid #e9c36a;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(90deg, #353b46, #101827);
+}
+
+#contador-revolucion .rev-chimenea::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 12px;
+  height: 4px;
+  border-radius: 3px;
+  background: #202b3b;
+  border: 1px solid #d9b65e;
+}
+
+#contador-revolucion .rev-faro {
+  position: absolute;
+  z-index: 2;
+  right: -5px;
+  bottom: 23px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff3b0;
+  box-shadow: 0 0 8px 3px rgba(255,220,115,.7);
+}
+
+#contador-revolucion .rev-parachoques {
+  position: absolute;
+  left: 0;
+  bottom: 9px;
+  width: 46px;
+  height: 4px;
+  border-radius: 3px;
+  background: #d4af37;
+}
+
+#contador-revolucion .rev-rueda {
+  position: absolute;
+  bottom: 0;
+  width: 13px;
+  height: 13px;
+  border: 3px solid #d9b65e;
+  border-radius: 50%;
+  background: #17243a;
+  box-shadow: inset 0 0 0 2px #64748b;
+  animation: rev-ruedas .8s linear infinite;
+}
+
+#contador-revolucion .rev-rueda.r1 { left: 7px; }
+#contador-revolucion .rev-rueda.r2 { left: 27px; }
+
+/* Vagones */
+#contador-revolucion .rev-vagon {
+  position: relative;
+  flex: 0 0 29px;
+  height: 23px;
+  margin-bottom: 11px;
+  border: 2px solid #e5bd58;
+  border-radius: 4px 4px 3px 3px;
+  background: linear-gradient(180deg, #347c65, #15513f);
+}
+
+#contador-revolucion .rev-vagon::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  top: 4px;
+  height: 7px;
+  border: 1px solid rgba(255,255,255,.65);
+  border-radius: 2px;
+  background: rgba(179,225,229,.5);
+}
+
+#contador-revolucion .rev-vagon::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  bottom: -6px;
+  width: 6px;
+  height: 6px;
+  border: 2px solid #d9b65e;
+  border-radius: 50%;
+  background: #17243a;
+  box-shadow: 13px 0 0 -2px #17243a, 13px 0 0 0 #d9b65e;
+}
+
+#contador-revolucion .rev-vagon.v2 {
+  background: linear-gradient(180deg, #d7a83d, #98621b);
+}
+
+/* Humo: sale de la chimenea, sube y se desvanece */
+#contador-revolucion .rev-humo {
+  position: absolute;
+  left: 24px;
+  bottom: 39px;
+  width: 28px;
+  height: 30px;
+  pointer-events: none;
+}
+
+#contador-revolucion .rev-humo i {
+  position: absolute;
+  left: 3px;
+  bottom: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.88), rgba(205,218,232,.48) 60%, rgba(205,218,232,0));
+  opacity: 0;
+  animation: rev-humo-subir 2.1s ease-out infinite;
+}
+
+#contador-revolucion .rev-humo i:nth-child(2) { animation-delay: .7s; left: 10px; }
+#contador-revolucion .rev-humo i:nth-child(3) { animation-delay: 1.4s; left: 0; }
+
+@keyframes rev-humo-subir {
+  0% { transform: translate(0, 7px) scale(.45); opacity: 0; }
+  18% { opacity: .75; }
+  70% { opacity: .38; }
+  100% { transform: translate(8px, -29px) scale(2.1); opacity: 0; }
+}
+
+@keyframes rev-ruedas {
+  to { transform: rotate(360deg); }
+}
+
+/* Línea tricolor */
+#contador-revolucion .rev-bandera {
+  display: flex;
+  gap: 5px;
+  height: 5px;
+  margin: 4px 0 17px;
+}
+
+#contador-revolucion .rev-bandera span {
+  flex: 1;
+  border-radius: 8px;
+}
+#contador-revolucion .rev-bandera span:nth-child(1) { background: #159447; }
+#contador-revolucion .rev-bandera span:nth-child(2) { background: #fff; }
+#contador-revolucion .rev-bandera span:nth-child(3) { background: #ce3434; }
+
+/* Tarjetas del reloj */
+#contador-revolucion .rev-reloj {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 8px;
+}
+
+#contador-revolucion .rev-tiempo {
+  min-width: 0;
+  padding: 10px 3px 9px;
+  border: 1px solid rgba(255,255,255,.24);
+  border-radius: 11px;
+  background: rgba(255,255,255,.105);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 5px 14px rgba(0,0,0,.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+#contador-revolucion .rev-tiempo strong {
+  display: block;
+  color: #fff;
+  font-size: clamp(22px, 5vw, 30px);
+  line-height: 1.15;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+#contador-revolucion .rev-tiempo small {
+  display: block;
+  margin-top: 5px;
+  color: #dce8f7;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .65px;
+}
+
+#contador-revolucion .rev-pie {
+  margin: 15px 0 0;
+  color: var(--rev-gold);
+  font-size: 10px;
+  line-height: 1.35;
+  font-weight: 800;
+  letter-spacing: .85px;
+}
+
+#contador-revolucion .rev-finalizado {
+  margin: 10px 0 0;
+  color: #fff2b0;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@media (max-width: 380px) {
+  #contador-revolucion { padding: 16px 11px 14px; }
+  #contador-revolucion .rev-reloj { gap: 5px; }
+  #contador-revolucion .rev-tiempo { padding: 9px 2px; }
+  #contador-revolucion .rev-tren-zona { --rev-tren-ancho: 108px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #contador-revolucion .rev-tren,
+  #contador-revolucion .rev-via-progreso { transition: none; }
+  #contador-revolucion .rev-humo i,
+  #contador-revolucion .rev-rueda { animation: none; }
+}
