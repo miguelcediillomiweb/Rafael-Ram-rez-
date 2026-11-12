@@ -1,23 +1,53 @@
-/* Apagado clásico de televisor: imagen -> línea horizontal -> punto */
-body.salida-blanca{background:#fff!important}
-body.salida-blanca:before,body.salida-blanca:after{content:none!important}
-body.television-apagada{overflow:hidden!important;background:#000!important}
+/* Cierre continuo: agradecimiento -> blanco -> apagado CRT */
+body.salida-blanca{
+  background:#fff!important;
+  background-image:none!important;
+}
+body.salida-blanca:before,
+body.salida-blanca:after{content:none!important}
+body.television-apagada{
+  overflow:hidden!important;
+  background:#000!important;
+}
+/* Evita que cualquier sección de la página reaparezca durante el apagado. */
+body.television-apagada > *:not(#apagadoTelevisor){
+  visibility:hidden!important;
+}
 #apagadoTelevisor{
-  position:fixed;inset:0;z-index:30000;display:flex;align-items:center;justify-content:center;
-  overflow:hidden;background:#000;pointer-events:all;
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483647!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  background:#000!important;
+  pointer-events:all!important;
+  visibility:visible!important;
+  isolation:isolate;
 }
 #apagadoTelevisor .tv-destello{
-  position:absolute;inset:0;background:#fff;transform-origin:center center;
+  position:absolute;
+  inset:0;
+  background:#fff;
+  transform:scaleY(1) scaleX(1);
+  transform-origin:center center;
   box-shadow:0 0 28px 5px rgba(255,255,255,.95);
   opacity:1;
+  will-change:transform,opacity;
 }
 #apagadoTelevisor.encendido-apagado .tv-destello{
   animation:apagadoCRT 1.2s cubic-bezier(.7,0,.9,.25) forwards;
 }
 #apagadoTelevisor .tv-fin{
-  position:relative;z-index:1;margin-top:92px;color:#fff;
+  position:relative;
+  z-index:1;
+  margin-top:92px;
+  color:#fff;
   font:700 clamp(.9rem,3.5vw,1.35rem)/1.4 'Courier New',monospace;
-  letter-spacing:.16em;text-align:center;text-shadow:0 0 9px rgba(255,255,255,.7);
+  letter-spacing:.16em;
+  text-align:center;
+  text-shadow:0 0 9px rgba(255,255,255,.7);
   opacity:0;
 }
 #apagadoTelevisor.encendido-apagado .tv-fin{
