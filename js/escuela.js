@@ -383,7 +383,7 @@ OneSignalDeferred.push(async function(OneSignal){
 });
 
 
-/* Despedida interactiva y cierre visual tipo televisor antiguo */
+/* Despedida educativa y apagado clásico de televisor CRT */
 (function(){
   const boton=document.getElementById('btnSalirWeb');
   const pantalla=document.getElementById('pantallaDespedida');
@@ -435,16 +435,23 @@ OneSignalDeferred.push(async function(OneSignal){
     pantalla.hidden=false;
     document.body.style.overflow='hidden';
     document.getElementById('despedidaTitulo').focus?.({preventScroll:true});
-    // 7 segundos para leer el mensaje completo.
+    // 6 segundos para leer el agradecimiento y la frase educativa.
     temporizadores.push(setTimeout(()=>{
       pantalla.hidden=true;
       document.body.classList.add('salida-blanca');
       // Pausa blanca de 3 segundos antes del efecto de televisión.
       temporizadores.push(setTimeout(()=>{
         document.body.classList.remove('salida-blanca');
-        document.body.classList.add('television-sin-senal');
+        const tv=document.createElement('div');
+        tv.id='apagadoTelevisor';
+        tv.setAttribute('role','status');
+        tv.setAttribute('aria-label','Fin de la transmisión');
+        tv.innerHTML='<span class="tv-destello" aria-hidden="true"></span><span class="tv-fin">FIN DE LA TRANSMISIÓN</span>';
+        document.body.appendChild(tv);
+        requestAnimationFrame(()=>tv.classList.add('encendido-apagado'));
+        document.body.classList.add('television-apagada');
       },3000));
-    },7000));
+    },6000));
   }
   boton.addEventListener('click',()=>{
     if(document.body.classList.contains('salida-blanca')||document.body.classList.contains('television-sin-senal'))return;
