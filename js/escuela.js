@@ -409,6 +409,7 @@ OneSignalDeferred.push(async function(OneSignal){
   const emojis=['📚','✏️','🎒','🍎','⭐','🌈','🧩','🖍️','🎨','🔬','🦋','🌻','🪁','📖','💡','🧠','🏫','📝','🌟','🧸','🎓','❤️','🪴','☀️','🕊️','🦉','🧮','🪄'];
   let ultimoPensamiento='';
   let temporizadores=[];
+  let cierreIniciado=false;
   function aleatorio(arr){return arr[Math.floor(Math.random()*arr.length)]}
   function pensamientoDistinto(){
     const opciones=pensamientos.filter(p=>p.texto!==ultimoPensamiento);
@@ -438,25 +439,24 @@ OneSignalDeferred.push(async function(OneSignal){
     // 6 segundos para leer el agradecimiento y la frase educativa.
     temporizadores.push(setTimeout(()=>{
       pantalla.hidden=true;
+      // La pantalla blanca permanece activa debajo del apagado CRT.
       document.body.classList.add('salida-blanca');
-      // Pausa blanca de 3 segundos antes del efecto de televisión.
+      // Pausa blanca completa de 3 segundos antes del efecto de televisión.
       temporizadores.push(setTimeout(()=>{
-        document.body.classList.remove('salida-blanca');
         const tv=document.createElement('div');
         tv.id='apagadoTelevisor';
         tv.setAttribute('role','status');
         tv.setAttribute('aria-label','Fin de la transmisión');
         tv.innerHTML='<span class="tv-destello" aria-hidden="true"></span><span class="tv-fin">FIN DE LA TRANSMISIÓN</span>';
         document.body.appendChild(tv);
-        requestAnimationFrame(()=>tv.classList.add('encendido-apagado'));
         document.body.classList.add('television-apagada');
+        requestAnimationFrame(()=>tv.classList.add('encendido-apagado'));
       },3000));
     },6000));
   }
   boton.addEventListener('click',()=>{
-    if(document.body.classList.contains('salida-blanca')||document.body.classList.contains('television-sin-senal'))return;
-    temporizadores.forEach(clearTimeout);
-    temporizadores=[];
+    if(cierreIniciado)return;
+    cierreIniciado=true;
     const p=pensamientoDistinto();
     frase.textContent=p.texto;
     autor.textContent='— '+p.autor;
