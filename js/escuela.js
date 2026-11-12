@@ -383,7 +383,7 @@ OneSignalDeferred.push(async function(OneSignal){
 });
 
 
-/* Despedida interactiva: frases educativas y emojis diferentes en cada visita */
+/* Despedida interactiva y cierre visual tipo televisor antiguo */
 (function(){
   const boton=document.getElementById('btnSalirWeb');
   const pantalla=document.getElementById('pantallaDespedida');
@@ -391,6 +391,7 @@ OneSignalDeferred.push(async function(OneSignal){
   const frase=document.getElementById('pensamientoTexto');
   const autor=document.getElementById('pensamientoAutor');
   if(!boton||!pantalla||!campoEmojis||!frase||!autor)return;
+
   const pensamientos=[
     {texto:'La educación es el arma más poderosa que puedes usar para cambiar el mundo.',autor:'Nelson Mandela'},
     {texto:'Se necesita un pueblo entero para educar a un niño.',autor:'Proverbio africano'},
@@ -401,10 +402,13 @@ OneSignalDeferred.push(async function(OneSignal){
     {texto:'Juntos podemos lograr que cada pequeño paso se convierta en un gran aprendizaje.',autor:'Reflexión educativa'},
     {texto:'La educación es la llave que abre las puertas de las oportunidades.',autor:'Reflexión educativa'},
     {texto:'Para educar a un niño hace falta la tribu entera.',autor:'Proverbio africano'},
-    {texto:'Los niños no recuerdan todo lo que les dices, pero sí cómo los haces sentir.',autor:'Reflexión educativa'}
+    {texto:'Los niños no recuerdan todo lo que les dices, pero sí cómo los haces sentir.',autor:'Reflexión educativa'},
+    {texto:'Un buen maestro puede crear esperanza, encender la imaginación e inspirar amor por el aprendizaje.',autor:'Brad Henry'},
+    {texto:'La enseñanza que deja huella no es la que se hace de cabeza a cabeza, sino de corazón a corazón.',autor:'Howard G. Hendricks'}
   ];
   const emojis=['📚','✏️','🎒','🍎','⭐','🌈','🧩','🖍️','🎨','🔬','🦋','🌻','🪁','📖','💡','🧠','🏫','📝','🌟','🧸','🎓','❤️','🪴','☀️','🕊️','🦉','🧮','🪄'];
-  let ultimoPensamiento = '';
+  let ultimoPensamiento='';
+  let temporizadores=[];
   function aleatorio(arr){return arr[Math.floor(Math.random()*arr.length)]}
   function pensamientoDistinto(){
     const opciones=pensamientos.filter(p=>p.texto!==ultimoPensamiento);
@@ -427,28 +431,29 @@ OneSignalDeferred.push(async function(OneSignal){
       campoEmojis.appendChild(span);
     }
   }
+  function iniciarCierre(){
+    pantalla.hidden=false;
+    document.body.style.overflow='hidden';
+    document.getElementById('despedidaTitulo').focus?.({preventScroll:true});
+    // 7 segundos para leer el mensaje completo.
+    temporizadores.push(setTimeout(()=>{
+      pantalla.hidden=true;
+      document.body.classList.add('salida-blanca');
+      // Pausa blanca de 3 segundos antes del efecto de televisión.
+      temporizadores.push(setTimeout(()=>{
+        document.body.classList.remove('salida-blanca');
+        document.body.classList.add('television-sin-senal');
+      },3000));
+    },7000));
+  }
   boton.addEventListener('click',()=>{
+    if(document.body.classList.contains('salida-blanca')||document.body.classList.contains('television-sin-senal'))return;
+    temporizadores.forEach(clearTimeout);
+    temporizadores=[];
     const p=pensamientoDistinto();
     frase.textContent=p.texto;
     autor.textContent='— '+p.autor;
     llenarEmojis();
-    pantalla.hidden=false;
-    document.body.style.overflow='hidden';
-    document.getElementById('despedidaTitulo').focus?.({preventScroll:true});
-    setTimeout(salirDelSitio,10000);
+    iniciarCierre();
   });
-  function salirDelSitio(){
-    // Chrome no permite cerrar por script una pestaña abierta manualmente.
-    // Se intenta cerrar y, si sigue abierta, se muestra una salida blanca limpia.
-    window.close();
-    setTimeout(()=>{
-      if(!document.hidden){
-        try { history.replaceState(null,'',location.pathname); } catch(_){}
-        document.documentElement.innerHTML='<head><meta name="viewport" content="width=device-width,initial-scale=1"><title></title><style>html,body{margin:0;width:100%;height:100%;background:#fff}</style></head><body></body>';
-      }
-    },1000);
-  }
-  // La pantalla de despedida queda como cierre final; después intenta salir.
-
-
-})();
+})();;
