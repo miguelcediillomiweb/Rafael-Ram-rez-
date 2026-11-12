@@ -1,0 +1,25 @@
+/* Efecto de despedida CRT solicitado para el botón Salir de la web */
+body.salida-blanca{background:#fff!important}
+body.salida-blanca:before,body.salida-blanca:after{content:none!important}
+body.television-sin-senal{background:#050505!important;overflow:hidden!important}
+body.television-sin-senal:before{
+  content:"";position:fixed;inset:0;z-index:20000;pointer-events:none;
+  background:
+    repeating-radial-gradient(circle at 17% 31%,rgba(255,255,255,.8) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.18) 0 1px,rgba(0,0,0,.15) 1px 3px),
+    repeating-linear-gradient(90deg,#777 0 2px,#222 2px 4px,#aaa 4px 5px,#111 5px 8px);
+  background-size:180px 140px,100% 4px,13px 100%;
+  opacity:.62;mix-blend-mode:screen;animation:crtNieve .16s steps(3,end) infinite,crtParpadeo 2.8s linear infinite;
+}
+body.television-sin-senal:after{
+  content:"SIN SEÑAL\\A\\A FIN DE LA VISITA\\A Ya puedes cerrar esta pestaña";
+  white-space:pre;position:fixed;z-index:20001;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:24px;text-align:center;color:#fff;font:900 clamp(1rem,4vw,2rem)/1.8 'Courier New',monospace;
+  letter-spacing:.12em;text-shadow:0 0 8px rgba(255,255,255,.9),2px 2px 0 #333;
+  background:radial-gradient(ellipse at center,transparent 25%,rgba(0,0,0,.68) 100%);
+  animation:crtTexto .12s steps(2,end) infinite alternate;
+}
+@keyframes crtNieve{0%{background-position:0 0,0 0,0 0}25%{background-position:37px -19px,0 2px,-5px 0}50%{background-position:-22px 31px,0 1px,7px 0}75%{background-position:14px 8px,0 3px,-2px 0}100%{background-position:-31px -12px,0 0,4px 0}}
+@keyframes crtParpadeo{0%,100%{opacity:.55}48%{opacity:.72}50%{opacity:.38}52%{opacity:.68}}
+@keyframes crtTexto{from{opacity:.92}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){body.television-sin-senal:before,body.television-sin-senal:after{animation:none}}
