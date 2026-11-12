@@ -91,7 +91,7 @@ body.television-sin-senal:before{
   opacity:.62;mix-blend-mode:screen;animation:crtNieve .16s steps(3,end) infinite,crtParpadeo 2.8s linear infinite;
 }
 body.television-sin-senal:after{
-  content:"SIN SEÑAL\\A\\A FIN DE LA VISITA\\A Ya puedes cerrar esta pestaña";
+  content:"SIN SEÑAL\A\A FIN DE LA VISITA\A Ya puedes cerrar esta pestaña";
   white-space:pre;position:fixed;z-index:20001;inset:0;display:flex;align-items:center;justify-content:center;
   padding:24px;text-align:center;color:#fff;font:900 clamp(1rem,4vw,2rem)/1.8 'Courier New',monospace;
   letter-spacing:.12em;text-shadow:0 0 8px rgba(255,255,255,.9),2px 2px 0 #333;
